@@ -1,2 +1,7 @@
 getwd()
 
+library(tidyverse)
+
+a=2+2
+
+2*a
