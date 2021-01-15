@@ -117,3 +117,7 @@ cal 2021 displays the calendar for 2021
 ``` {bash}
 cal 2021
 ```
+
+``` {bash}
+cal 9 1752
+```
