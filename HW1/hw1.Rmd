@@ -166,7 +166,60 @@ cal 2021 displays the calendar for 2021
 ``` {bash}
 cal 2021
 ```
-
+cal 9 1752 displays the calendar for September 1752. September 3rd through September 13th are missing from this month is 1752.
 ``` {bash}
 cal 9 1752
 ```
+date lists the current date and time 
+``` {bash}
+date
+```
+hostname shows the system's host name
+``` {bash}
+hostname
+```
+arch shows the cpu architecture of the host computer
+``` {bash}
+arch
+```
+uname -a prints all system information from the uname command, including the Kernel information, processor information, and machine name
+``` {bash}
+uname -a
+```
+uptime lists how long since the last system reboot
+``` {bash}
+uptime
+```
+whoami prints the userid of the user
+``` {bash}
+whoami
+```
+who prints info about the currently logged in user (who they are, when and where they logged in from)
+``` {bash}
+who
+```
+w prints information about the currently logged in user, what they are doing and uptime information
+``` {bash}
+w
+```
+id prints the user id and group ids for the user
+``` {bash}
+id
+```
+last | head shows a list of the last ten logins to the computer
+``` {bash}
+last | head
+```
+echo {con,pre}{sent,fer}{s,ed} outputs a list of all possible combinations of the listed strings in each set of brackets, remaining in the same order.
+``` {bash}
+echo {con,pre}{sent,fer}{s,ed}
+```
+time sleep 5 times how long it takes to execute the sleep 5 command, which tells the system to wait for 5 seconds before continuing
+``` {bash}
+time sleep 5
+```
+history | tail lists the last ten commands inputted into the terminal
+``` {bash}
+history | tail
+```
+

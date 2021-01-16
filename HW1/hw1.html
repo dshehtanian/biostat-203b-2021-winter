@@ -584,12 +584,65 @@ head -n &quot;$2&quot; &quot;$1&quot; | tail -n &quot;$3&quot;</code></pre>
 ## 17 18 19 20 21 22 23   21 22 23 24 25 26 27   19 20 21 22 23 24 25
 ## 24 25 26 27 28 29 30   28 29 30               26 27 28 29 30 31
 ## 31</code></pre>
+<p>cal 9 1752 displays the calendar for September 1752. September 3rd through September 13th are missing from this month is 1752.</p>
 <pre class="bash"><code>cal 9 1752</code></pre>
 <pre><code>##    September 1752   
 ## Su Mo Tu We Th Fr Sa
 ##        1  2 14 15 16
 ## 17 18 19 20 21 22 23
 ## 24 25 26 27 28 29 30</code></pre>
+<p>date lists the current date and time</p>
+<pre class="bash"><code>date</code></pre>
+<pre><code>## Sat Jan 16 23:39:10 UTC 2021</code></pre>
+<p>hostname shows the system’s host name</p>
+<pre class="bash"><code>hostname</code></pre>
+<pre><code>## ucla-biostat-203b</code></pre>
+<p>arch shows the cpu architecture of the host computer</p>
+<pre class="bash"><code>arch</code></pre>
+<pre><code>## x86_64</code></pre>
+<p>uname -a prints all system information from the uname command, including the Kernel information, processor information, and machine name</p>
+<pre class="bash"><code>uname -a</code></pre>
+<pre><code>## Linux ucla-biostat-203b 3.10.0-1160.6.1.el7.x86_64 #1 SMP Tue Nov 17 13:59:11 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux</code></pre>
+<p>uptime lists how long since the last system reboot</p>
+<pre class="bash"><code>uptime</code></pre>
+<pre><code>##  23:39:10 up 13 days,  1:50,  1 user,  load average: 0.08, 0.05, 0.05</code></pre>
+<p>whoami prints the userid of the user</p>
+<pre class="bash"><code>whoami</code></pre>
+<pre><code>## dshehtanian</code></pre>
+<p>who prints info about the currently logged in user (who they are, when and where they logged in from)</p>
+<pre class="bash"><code>who</code></pre>
+<pre><code>## dshehtanian pts/2        2021-01-16 22:32 (cpe-45-51-98-96.socal.res.rr.com)</code></pre>
+<p>w prints information about the currently logged in user, what they are doing and uptime information</p>
+<pre class="bash"><code>w</code></pre>
+<pre><code>##  23:39:10 up 13 days,  1:50,  1 user,  load average: 0.08, 0.05, 0.05
+## USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+## dshehtan pts/2    cpe-45-51-98-96. 22:32    6:06   0.15s  0.15s -bash</code></pre>
+<p>id prints the user id and group ids for the user</p>
+<pre class="bash"><code>id</code></pre>
+<pre><code>## uid=1025(dshehtanian) gid=1027(dshehtanian) groups=1027(dshehtanian) context=system_u:system_r:initrc_t:s0</code></pre>
+<p>last | head shows a list of the last ten logins to the computer</p>
+<pre class="bash"><code>last | head</code></pre>
+<pre><code>## dshehtan pts/2        cpe-45-51-98-96. Sat Jan 16 22:32   still logged in   
+## asburyse pts/3        c-73-157-156-163 Sat Jan 16 21:54 - 22:18  (00:23)    
+## asburyse pts/3        c-73-157-156-163 Sat Jan 16 21:41 - 21:54  (00:13)    
+## asburyse pts/3        c-73-157-156-163 Sat Jan 16 21:39 - 21:40  (00:01)    
+## asburyse pts/3        c-73-157-156-163 Sat Jan 16 21:35 - 21:39  (00:03)    
+## asburyse pts/0        c-73-157-156-163 Sat Jan 16 20:06 - 20:34  (00:27)    
+## asburyse pts/0        c-73-157-156-163 Sat Jan 16 19:32 - 20:06  (00:34)    
+## zianzhua pts/2        120.36.96.69     Sat Jan 16 17:57 - 17:57  (00:00)    
+## zianzhua pts/2        120.36.96.69     Sat Jan 16 17:50 - 17:50  (00:00)    
+## zianzhua pts/2        120.36.96.69     Sat Jan 16 17:46 - 17:46  (00:00)</code></pre>
+<p>echo {con,pre}{sent,fer}{s,ed} outputs a list of all possible combinations of the listed strings in each set of brackets, remaining in the same order.</p>
+<pre class="bash"><code>echo {con,pre}{sent,fer}{s,ed}</code></pre>
+<pre><code>## consents consented confers confered presents presented prefers prefered</code></pre>
+<p>time sleep 5 times how long it takes to execute the sleep 5 command, which tells the system to wait for 5 seconds before continuing</p>
+<pre class="bash"><code>time sleep 5</code></pre>
+<pre><code>## 
+## real 0m5.002s
+## user 0m0.000s
+## sys  0m0.002s</code></pre>
+<p>history | tail lists the last ten commands inputted into the terminal</p>
+<pre class="bash"><code>history | tail</code></pre>
 </div>
 </div>
 
