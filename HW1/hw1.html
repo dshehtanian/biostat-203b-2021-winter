@@ -411,7 +411,7 @@ summary {
 <li>This exercise (and later in this course) uses the <a href="https://mimic-iv.mit.edu">MIMIC-IV data</a>, a freely accessible critical care database developed by the MIT Lab for Computational Physiology. Follow the instructions at <a href="https://mimic-iv.mit.edu/docs/access/" class="uri">https://mimic-iv.mit.edu/docs/access/</a> to (1) complete the CITI <code>Data or Specimens Only Research</code> course and (2) obtain the PhysioNet credential for using the MIMIC-IV data. Display the verification links to your completion report and completion certificate here. (Hint: The CITI training takes a couple hours and the PhysioNet credentialing takes a couple days; do not leave it to the last minute.)</li>
 </ol>
 <p><strong>Solution:</strong> <a href="https://www.citiprogram.org/verify/?k2d22ea07-a433-46a8-ad5a-6a92d7fec6b0-40373283">Course Completion</a></p>
-<pre><code>          [Certificate](https://www.citiprogram.org/verify/?wdf218c49-bd83-40e6-89b3-3d4f2f64d125-40373283)</code></pre>
+<p><a href="https://www.citiprogram.org/verify/?wdf218c49-bd83-40e6-89b3-3d4f2f64d125-40373283">Certificate</a></p>
 <ol start="2" style="list-style-type: decimal">
 <li><p>The <code>/usr/203b-data/mimic-iv/</code> folder on teaching server contains data sets from MIMIC-IV. Refer to <a href="https://mimic-iv.mit.edu/docs/datasets/" class="uri">https://mimic-iv.mit.edu/docs/datasets/</a> for details of data files.</p>
 <pre class="bash"><code>ls -l /usr/203b-data/mimic-iv/</code></pre>
@@ -420,10 +420,52 @@ summary {
 ## drwxr-xr-x. 2 huazhou huazhou 4096 Jan 11 02:13 hosp
 ## drwxr-xr-x. 2 huazhou huazhou  189 Jan 11 02:25 icu
 ## -rw-r--r--. 1 huazhou huazhou 2518 Jan 11 02:13 LICENSE.txt
-## -rw-r--r--. 1 huazhou huazhou 2459 Jan 11 02:13 SHA256SUMS.txt</code></pre>
+## -rw-r--r--. 1 huazhou huazhou 2459 Jan 11 02:13 SHA256SUMS.txt</code></pre></li>
+</ol>
 <p>Please, do <strong>not</strong> put these data files into Git; they are big. Do <strong>not</strong> copy them into your directory. Do <strong>not</strong> decompress the gz data files. These create unnecessary big files on storage and are not big data friendly practices. Just read from the data folder <code>/usr/203b-data/mimic-iv</code> directly in following exercises.</p>
-<p>Use Bash commands to answer following questions.</p></li>
-<li><p>Display the contents in the folders <code>core</code>, <code>hosp</code>, <code>icu</code>. What are the functionalities of the bash commands <code>zcat</code>, <code>zless</code>, <code>zmore</code>, and <code>zgrep</code>?</p></li>
+<pre><code>Use Bash commands to answer following questions.</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Display the contents in the folders <code>core</code>, <code>hosp</code>, <code>icu</code>. What are the functionalities of the bash commands <code>zcat</code>, <code>zless</code>, <code>zmore</code>, and <code>zgrep</code>?</li>
+</ol>
+<p><strong>Solution:</strong></p>
+<pre class="bash"><code>ls -l /usr/203b-data/mimic-iv/core /usr/203b-data/mimic-iv/hosp /usr/203b-data/mimic-iv/icu</code></pre>
+<pre><code>## /usr/203b-data/mimic-iv/core:
+## total 69636
+## -rw-r--r--. 1 huazhou huazhou 17224843 Jan 11 01:55 admissions.csv.gz
+## -rw-r--r--. 1 huazhou huazhou  2884996 Jan 11 01:54 patients.csv.gz
+## -rw-r--r--. 1 huazhou huazhou 51188147 Jan 11 01:55 transfers.csv.gz
+## 
+## /usr/203b-data/mimic-iv/hosp:
+## total 4375600
+## -rw-r--r--. 1 huazhou huazhou     430049 Jan 11 01:57 d_hcpcs.csv.gz
+## -rw-r--r--. 1 huazhou huazhou   26575586 Jan 11 01:57 diagnoses_icd.csv.gz
+## -rw-r--r--. 1 huazhou huazhou     723633 Jan 11 02:00 d_icd_diagnoses.csv.gz
+## -rw-r--r--. 1 huazhou huazhou     564422 Jan 11 02:11 d_icd_procedures.csv.gz
+## -rw-r--r--. 1 huazhou huazhou      14845 Jan 11 02:00 d_labitems.csv.gz
+## -rw-r--r--. 1 huazhou huazhou   12913088 Jan 11 02:00 drgcodes.csv.gz
+## -rw-r--r--. 1 huazhou huazhou  518077567 Jan 11 02:13 emar.csv.gz
+## -rw-r--r--. 1 huazhou huazhou  479709397 Jan 11 01:59 emar_detail.csv.gz
+## -rw-r--r--. 1 huazhou huazhou    1415469 Jan 11 02:11 hcpcsevents.csv.gz
+## -rw-r--r--. 1 huazhou huazhou 2093725833 Jan 11 02:09 labevents.csv.gz
+## -rw-r--r--. 1 huazhou huazhou   15896456 Jan 11 02:13 microbiologyevents.csv.gz
+## -rw-r--r--. 1 huazhou huazhou  423170857 Jan 11 02:11 pharmacy.csv.gz
+## -rw-r--r--. 1 huazhou huazhou  501822286 Jan 11 01:57 poe.csv.gz
+## -rw-r--r--. 1 huazhou huazhou   23675550 Jan 11 01:57 poe_detail.csv.gz
+## -rw-r--r--. 1 huazhou huazhou  367321152 Jan 11 02:00 prescriptions.csv.gz
+## -rw-r--r--. 1 huazhou huazhou    4965027 Jan 11 02:11 procedures_icd.csv.gz
+## -rw-r--r--. 1 huazhou huazhou    9579255 Jan 11 02:11 services.csv.gz
+## 
+## /usr/203b-data/mimic-iv/icu:
+## total 2627900
+## -rw-r--r--. 1 huazhou huazhou 2264326210 Jan 11 02:25 chartevents.csv.gz
+## -rw-r--r--. 1 huazhou huazhou   40440772 Jan 11 02:13 datetimeevents.csv.gz
+## -rw-r--r--. 1 huazhou huazhou      56593 Jan 11 02:14 d_items.csv.gz
+## -rw-r--r--. 1 huazhou huazhou    2628845 Jan 11 02:25 icustays.csv.gz
+## -rw-r--r--. 1 huazhou huazhou  328835832 Jan 11 02:14 inputevents.csv.gz
+## -rw-r--r--. 1 huazhou huazhou   35300863 Jan 11 02:25 outputevents.csv.gz
+## -rw-r--r--. 1 huazhou huazhou   19362097 Jan 11 02:14 procedureevents.csv.gz</code></pre>
+<p>zcat - Prints the contents of files which are compressed. zmore - Allows reading through text of compressed files one screen at a time. Only allows for forward movement. zless - Allows reading through text of compressed files one screen at a time. Allows for forward and backward movement and scrolling. zgrep - Allows for searching compressed files for strings/regular expressions.</p>
+<ol start="4" style="list-style-type: decimal">
 <li><p>What’s the output of following bash script?</p>
 <pre class="bash"><code>for datafile in /usr/203b-data/mimic-iv/core/*.gz
   do
