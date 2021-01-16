@@ -44,6 +44,7 @@ sessionInfo()
 1. This exercise (and later in this course) uses the [MIMIC-IV data](https://mimic-iv.mit.edu), a freely accessible critical care database developed by the MIT Lab for Computational Physiology. Follow the instructions at <https://mimic-iv.mit.edu/docs/access/> to (1) complete the CITI `Data or Specimens Only Research` course and (2) obtain the PhysioNet credential for using the MIMIC-IV data. Display the verification links to your completion report and completion certificate here. (Hint: The CITI training takes a couple hours and the PhysioNet credentialing takes a couple days; do not leave it to the last minute.)
 
 **Solution:** 
+
 [Course Completion](https://www.citiprogram.org/verify/?k2d22ea07-a433-46a8-ad5a-6a92d7fec6b0-40373283)
 
 [Certificate](https://www.citiprogram.org/verify/?wdf218c49-bd83-40e6-89b3-3d4f2f64d125-40373283)
@@ -55,6 +56,8 @@ sessionInfo()
     ```
 
 Please, do **not** put these data files into Git; they are big. Do **not** copy them into your directory. Do **not** decompress the gz data files. These create unnecessary big files on storage and are not big data friendly practices. Just read from the data folder `/usr/203b-data/mimic-iv` directly in following exercises. 
+
+**Solution:** Acknowledged.
 
     Use Bash commands to answer following questions.
 
@@ -78,22 +81,45 @@ zgrep - Allows for searching compressed files for strings/regular expressions.
         ls -l $datafile
       done
     ```
+**Solution:** This loop runs the "ls -l" command for each datafile ending in .gz in the /usr/203b-data/mimic-iv/core/ directory.
+
 Display the number of lines in each data file using a similar loop.
 
+**Solution:** 
+
+    ```{bash, eval=F}
+    for datafile in /usr/203b-data/mimic-iv/core/*.gz
+      do
+        wc -l $datafile
+      done
+    ```
+
 4. Display the first few lines of `admissions.csv.gz`. How many rows are in this data file? How many unique patients (identified by `subject_id`) are in this data file? What are the possible values taken by each of the variable `admission_type`, `admission_location`, `insurance`, `language`, `marital_status`, and `ethnicity`? Also report the count for each unique value of these variables. (Hint: combine Linux commands `zcat`, `head`/`tail`, `awk`, `uniq`, `wc`, and so on.)
+
+**Solution:** INCOMPLETE
+
+```{bash}
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | head
+
+```
 
 ## Q3. Who's popular in Price and Prejudice
 
 1. You and your friend just have finished reading *Pride and Prejudice* by Jane Austen. Among the four main characters in the book, Elizabeth, Jane, Lydia, and Darcy, your friend thinks that Darcy was the most mentioned. You, however, are certain it was Elizabeth. Obtain the full text of the novel from <http://www.gutenberg.org/cache/epub/42671/pg42671.txt> and save to your local folder. 
     ```{bash, eval=FALSE}
     curl http://www.gutenberg.org/cache/epub/42671/pg42671.txt > pride_and_prejudice.txt
-    cat pride_and_prejudice.txt | grep -o Jane | wc -w
-    ```
-    ```{bash, eval=FALSE}
-    curl http://www.gutenberg.org/cache/epub/42671/pg42671.txt | grep -o Jane | wc -w
     ```
 
 Do **not** put this text file `pride_and_prejudice.txt` in Git. Using a `for` loop, how would you tabulate the number of times each of the four characters is mentioned?
+
+**Solution:**
+    ```{bash, eval=F}
+    for name in {Elizabeth,Jane,Lydia,Darcy}
+      do
+        ment=$(grep -o $name ./pride_and_prejudice.txt | wc -l)
+        echo "$name is mentioned $ment times."
+      done
+    ```
 
 2. What's the difference between the following two commands?
     ```{bash eval=FALSE}
@@ -104,6 +130,10 @@ Do **not** put this text file `pride_and_prejudice.txt` in Git. Using a `for` lo
     echo 'hello, world' >> test2.txt
     ```
 
+**Solution:**
+  The first command writes 'hello, world' (without commas, in every case mentioned in this solution) to a file. Each time the command is run, the file is overwritten and only contains one line reading 'hello, world'.
+  The second command appends 'hello, world' to a file. Each time the command is run, a new line containing 'hello, world' is added to the end of the file.
+  
 3. Using your favorite text editor (e.g., `vi`), type the following and save the file as `middle.sh`:
     ```{bash eval=FALSE}
     #!/bin/sh
@@ -113,9 +143,13 @@ Do **not** put this text file `pride_and_prejudice.txt` in Git. Using a `for` lo
     ```
 Using `chmod` make the file executable by the owner, and run 
     ```{bash eval=FALSE}
+    chmod 770 ./middle.sh
     ./middle.sh pride_and_prejudice.txt 20 5
     ```
 Explain the output. Explain the meaning of `"$1"`, `"$2"`, and `"$3"` in this shell script. Why do we need the first line of the shell script?
+
+**Solution:** This script outputs lines 16-20 of the text of Pride and Prejudice. It first outputs the first 20 lines of pride_and_prejudice.txt, and then it outputs the last 5 lines of the prior output to the terminal. By adjusting the arguments we can change the file, the number of lines starting from the beginning output and the number of lines from the end of that, which are output to the terminal.
+  "$1","$2", and "$3" refer to the arguments taken by the shell script. "$1" is the first argument (in this case pride_and_prejudice.txt). "$2" and "$3" refer to 20 and 5 respectively from the example. This allows the script to take a variety of arguments.
 
 ### Q4. More fun with Linux
 

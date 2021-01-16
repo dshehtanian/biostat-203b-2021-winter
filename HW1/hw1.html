@@ -410,7 +410,8 @@ summary {
 <ol style="list-style-type: decimal">
 <li>This exercise (and later in this course) uses the <a href="https://mimic-iv.mit.edu">MIMIC-IV data</a>, a freely accessible critical care database developed by the MIT Lab for Computational Physiology. Follow the instructions at <a href="https://mimic-iv.mit.edu/docs/access/" class="uri">https://mimic-iv.mit.edu/docs/access/</a> to (1) complete the CITI <code>Data or Specimens Only Research</code> course and (2) obtain the PhysioNet credential for using the MIMIC-IV data. Display the verification links to your completion report and completion certificate here. (Hint: The CITI training takes a couple hours and the PhysioNet credentialing takes a couple days; do not leave it to the last minute.)</li>
 </ol>
-<p><strong>Solution:</strong> <a href="https://www.citiprogram.org/verify/?k2d22ea07-a433-46a8-ad5a-6a92d7fec6b0-40373283">Course Completion</a></p>
+<p><strong>Solution:</strong></p>
+<p><a href="https://www.citiprogram.org/verify/?k2d22ea07-a433-46a8-ad5a-6a92d7fec6b0-40373283">Course Completion</a></p>
 <p><a href="https://www.citiprogram.org/verify/?wdf218c49-bd83-40e6-89b3-3d4f2f64d125-40373283">Certificate</a></p>
 <ol start="2" style="list-style-type: decimal">
 <li><p>The <code>/usr/203b-data/mimic-iv/</code> folder on teaching server contains data sets from MIMIC-IV. Refer to <a href="https://mimic-iv.mit.edu/docs/datasets/" class="uri">https://mimic-iv.mit.edu/docs/datasets/</a> for details of data files.</p>
@@ -423,6 +424,7 @@ summary {
 ## -rw-r--r--. 1 huazhou huazhou 2459 Jan 11 02:13 SHA256SUMS.txt</code></pre></li>
 </ol>
 <p>Please, do <strong>not</strong> put these data files into Git; they are big. Do <strong>not</strong> copy them into your directory. Do <strong>not</strong> decompress the gz data files. These create unnecessary big files on storage and are not big data friendly practices. Just read from the data folder <code>/usr/203b-data/mimic-iv</code> directly in following exercises.</p>
+<p><strong>Solution:</strong> Acknowledged.</p>
 <pre><code>Use Bash commands to answer following questions.</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>Display the contents in the folders <code>core</code>, <code>hosp</code>, <code>icu</code>. What are the functionalities of the bash commands <code>zcat</code>, <code>zless</code>, <code>zmore</code>, and <code>zgrep</code>?</li>
@@ -471,33 +473,67 @@ summary {
   do
     ls -l $datafile
   done</code></pre>
-<p>Display the number of lines in each data file using a similar loop.</p></li>
-<li><p>Display the first few lines of <code>admissions.csv.gz</code>. How many rows are in this data file? How many unique patients (identified by <code>subject_id</code>) are in this data file? What are the possible values taken by each of the variable <code>admission_type</code>, <code>admission_location</code>, <code>insurance</code>, <code>language</code>, <code>marital_status</code>, and <code>ethnicity</code>? Also report the count for each unique value of these variables. (Hint: combine Linux commands <code>zcat</code>, <code>head</code>/<code>tail</code>, <code>awk</code>, <code>uniq</code>, <code>wc</code>, and so on.)</p></li>
+<p><strong>Solution:</strong> This loop runs the “ls -l” command for each datafile ending in .gz in the /usr/203b-data/mimic-iv/core/ directory.</p></li>
 </ol>
+<p>Display the number of lines in each data file using a similar loop.</p>
+<p><strong>Solution:</strong></p>
+<pre><code>```bash
+for datafile in /usr/203b-data/mimic-iv/core/*.gz
+  do
+    wc -l $datafile
+  done
+```</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Display the first few lines of <code>admissions.csv.gz</code>. How many rows are in this data file? How many unique patients (identified by <code>subject_id</code>) are in this data file? What are the possible values taken by each of the variable <code>admission_type</code>, <code>admission_location</code>, <code>insurance</code>, <code>language</code>, <code>marital_status</code>, and <code>ethnicity</code>? Also report the count for each unique value of these variables. (Hint: combine Linux commands <code>zcat</code>, <code>head</code>/<code>tail</code>, <code>awk</code>, <code>uniq</code>, <code>wc</code>, and so on.)</li>
+</ol>
+<p><strong>Solution:</strong> INCOMPLETE</p>
+<pre class="bash"><code>  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | head
+</code></pre>
+<pre><code>## subject_id,hadm_id,admittime,dischtime,deathtime,admission_type,admission_location,discharge_location,insurance,language,marital_status,ethnicity,edregtime,edouttime,hospital_expire_flag
+## 12427812,21593330,2184-01-06 11:51:00,2184-01-10 11:45:00,,URGENT,PHYSICIAN REFERRAL,HOME,Other,ENGLISH,,UNKNOWN,,,0
+## 14029832,22059088,2120-01-18 01:28:00,2120-01-20 16:13:00,,URGENT,TRANSFER FROM HOSPITAL,HOME,Other,ENGLISH,,OTHER,,,0
+## 14495017,22484010,2175-01-28 15:41:00,2175-01-29 16:00:00,,DIRECT EMER.,PHYSICIAN REFERRAL,HOME,Other,?,,WHITE,,,0
+## 13676048,23865469,2193-01-19 05:27:00,2193-01-24 18:59:00,,URGENT,PHYSICIAN REFERRAL,HOME,Other,?,MARRIED,WHITE,,,0
+## 13831972,27763544,2131-01-27 04:03:00,2131-01-27 05:39:00,,EU OBSERVATION,EMERGENCY ROOM,,Medicaid,ENGLISH,SINGLE,WHITE,2131-01-26 22:19:00,2131-01-27 05:39:00,0
+## 18523038,25414328,2142-08-26 17:14:00,2142-08-27 10:00:00,,DIRECT OBSERVATION,PROCEDURE SITE,,Other,ENGLISH,SINGLE,WHITE,,,0
+## 16705931,20580522,2174-10-24 11:30:00,2174-10-24 18:45:00,,DIRECT OBSERVATION,PHYSICIAN REFERRAL,,Other,ENGLISH,MARRIED,WHITE,,,0
+## 19963742,24951506,2171-07-04 15:58:00,2171-07-05 13:37:00,,AMBULATORY OBSERVATION,PACU,,Other,ENGLISH,SINGLE,UNKNOWN,,,0
+## 10903424,22568585,2181-01-31 13:09:00,2181-01-31 13:42:00,,EU OBSERVATION,EMERGENCY ROOM,,Other,ENGLISH,SINGLE,WHITE,,,0</code></pre>
 </div>
 <div id="q3.-whos-popular-in-price-and-prejudice" class="section level2">
 <h2>Q3. Who’s popular in Price and Prejudice</h2>
 <ol style="list-style-type: decimal">
 <li><p>You and your friend just have finished reading <em>Pride and Prejudice</em> by Jane Austen. Among the four main characters in the book, Elizabeth, Jane, Lydia, and Darcy, your friend thinks that Darcy was the most mentioned. You, however, are certain it was Elizabeth. Obtain the full text of the novel from <a href="http://www.gutenberg.org/cache/epub/42671/pg42671.txt" class="uri">http://www.gutenberg.org/cache/epub/42671/pg42671.txt</a> and save to your local folder.</p>
-<pre class="bash"><code>curl http://www.gutenberg.org/cache/epub/42671/pg42671.txt &gt; pride_and_prejudice.txt
-cat pride_and_prejudice.txt | grep -o Jane | wc -w</code></pre>
-<pre class="bash"><code>curl http://www.gutenberg.org/cache/epub/42671/pg42671.txt | grep -o Jane | wc -w</code></pre></li>
+<pre class="bash"><code>curl http://www.gutenberg.org/cache/epub/42671/pg42671.txt &gt; pride_and_prejudice.txt</code></pre></li>
 </ol>
 <p>Do <strong>not</strong> put this text file <code>pride_and_prejudice.txt</code> in Git. Using a <code>for</code> loop, how would you tabulate the number of times each of the four characters is mentioned?</p>
+<p><strong>Solution:</strong></p>
+<pre><code>```bash
+for name in {Elizabeth,Jane,Lydia,Darcy}
+  do
+    ment=$(grep -o $name ./pride_and_prejudice.txt | wc -l)
+    echo &quot;$name is mentioned $ment times.&quot;
+  done
+```</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li><p>What’s the difference between the following two commands?</p>
 <pre class="bash"><code>echo &#39;hello, world&#39; &gt; test1.txt</code></pre>
 <p>and</p>
 <pre class="bash"><code>echo &#39;hello, world&#39; &gt;&gt; test2.txt</code></pre></li>
+</ol>
+<p><strong>Solution:</strong> The first command writes ‘hello, world’ (without commas, in every case mentioned in this solution) to a file. Each time the command is run, the file is overwritten and only contains one line reading ‘hello, world’. The second command appends ‘hello, world’ to a file. Each time the command is run, a new line containing ‘hello, world’ is added to the end of the file.</p>
+<ol start="3" style="list-style-type: decimal">
 <li><p>Using your favorite text editor (e.g., <code>vi</code>), type the following and save the file as <code>middle.sh</code>:</p>
 <pre class="bash"><code>#!/bin/sh
 # Select lines from the middle of a file.
 # Usage: bash middle.sh filename end_line num_lines
 head -n &quot;$2&quot; &quot;$1&quot; | tail -n &quot;$3&quot;</code></pre>
 <p>Using <code>chmod</code> make the file executable by the owner, and run</p>
-<pre class="bash"><code>./middle.sh pride_and_prejudice.txt 20 5</code></pre>
+<pre class="bash"><code>chmod 770 ./middle.sh
+./middle.sh pride_and_prejudice.txt 20 5</code></pre>
 <p>Explain the output. Explain the meaning of <code>&quot;$1&quot;</code>, <code>&quot;$2&quot;</code>, and <code>&quot;$3&quot;</code> in this shell script. Why do we need the first line of the shell script?</p></li>
 </ol>
+<p><strong>Solution:</strong> This script outputs lines 16-20 of the text of Pride and Prejudice. It first outputs the first 20 lines of pride_and_prejudice.txt, and then it outputs the last 5 lines of the prior output to the terminal. By adjusting the arguments we can change the file, the number of lines starting from the beginning output and the number of lines from the end of that, which are output to the terminal. “$1”,“$2”, and “$3” refer to the arguments taken by the shell script. “$1” is the first argument (in this case pride_and_prejudice.txt). “$2” and “$3” refer to 20 and 5 respectively from the example. This allows the script to take a variety of arguments.</p>
 <div id="q4.-more-fun-with-linux" class="section level3">
 <h3>Q4. More fun with Linux</h3>
 <p>Try these commands in Bash and interpret the results: <code>cal</code>, <code>cal 2021</code>, <code>cal 9 1752</code> (anything unusual?), <code>date</code>, <code>hostname</code>, <code>arch</code>, <code>uname -a</code>, <code>uptime</code>, <code>who am i</code>, <code>who</code>, <code>w</code>, <code>id</code>, <code>last | head</code>, <code>echo {con,pre}{sent,fer}{s,ed}</code>, <code>time sleep 5</code>, <code>history | tail</code>.</p>
