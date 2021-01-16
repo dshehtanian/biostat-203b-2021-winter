@@ -385,26 +385,42 @@ summary {
 <h2>Q1. Git/GitHub</h2>
 <p><strong>No handwritten homework reports are accepted for this course.</strong> We work with Git and GitHub. Efficient and abundant use of Git, e.g., frequent and well-documented commits, is an important criterion for grading your homework.</p>
 <ol style="list-style-type: decimal">
-<li><p>Apply for the <a href="https://education.github.com/pack">Student Developer Pack</a> at GitHub using your UCLA email.</p></li>
-<li><p>Create a <strong>private</strong> repository <code>biostat-203b-2021-winter</code> and add <code>Hua-Zhou</code>, <code>Chris-German</code> and <code>ElvisCuiHan</code> as your collaborators with write permission.</p></li>
-<li><p>Top directories of the repository should be <code>hw1</code>, <code>hw2</code>, … Maintain two branches <code>master</code> and <code>develop</code>. The <code>develop</code> branch will be your main playground, the place where you develop solution (code) to homework problems and write up report. The <code>master</code> branch will be your presentation area. Submit your homework files (R markdown file <code>Rmd</code>, <code>html</code> file converted from R markdown, all code and data sets to reproduce results) in <code>master</code> branch.</p></li>
-<li><p>After each homework due date, teaching assistant and instructor will check out your master branch for grading. Tag each of your homework submissions with tag names <code>hw1</code>, <code>hw2</code>, … Tagging time will be used as your submission time. That means if you tag your <code>hw1</code> submission after deadline, penalty points will be deducted for late submission.</p></li>
-<li><p>After this course, you can make this repository public and use it to demonstrate your skill sets on job market.</p></li>
+<li>Apply for the <a href="https://education.github.com/pack">Student Developer Pack</a> at GitHub using your UCLA email.</li>
 </ol>
+<p><strong>Solution:</strong> Done.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Create a <strong>private</strong> repository <code>biostat-203b-2021-winter</code> and add <code>Hua-Zhou</code>, <code>Chris-German</code> and <code>ElvisCuiHan</code> as your collaborators with write permission.</li>
+</ol>
+<p><strong>Solution:</strong> Done.</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Top directories of the repository should be <code>hw1</code>, <code>hw2</code>, … Maintain two branches <code>master</code> and <code>develop</code>. The <code>develop</code> branch will be your main playground, the place where you develop solution (code) to homework problems and write up report. The <code>master</code> branch will be your presentation area. Submit your homework files (R markdown file <code>Rmd</code>, <code>html</code> file converted from R markdown, all code and data sets to reproduce results) in <code>master</code> branch.</li>
+</ol>
+<p><strong>Solution:</strong> Done.</p>
+<ol start="4" style="list-style-type: decimal">
+<li>After each homework due date, teaching assistant and instructor will check out your master branch for grading. Tag each of your homework submissions with tag names <code>hw1</code>, <code>hw2</code>, … Tagging time will be used as your submission time. That means if you tag your <code>hw1</code> submission after deadline, penalty points will be deducted for late submission.</li>
+</ol>
+<p><strong>Solution:</strong> Done.</p>
+<ol start="5" style="list-style-type: decimal">
+<li>After this course, you can make this repository public and use it to demonstrate your skill sets on job market.</li>
+</ol>
+<p><strong>Solution:</strong> Acknowledged.</p>
 </div>
 <div id="q2.-linux-shell-commands" class="section level2">
 <h2>Q2. Linux Shell Commands</h2>
 <ol style="list-style-type: decimal">
-<li><p>This exercise (and later in this course) uses the <a href="https://mimic-iv.mit.edu">MIMIC-IV data</a>, a freely accessible critical care database developed by the MIT Lab for Computational Physiology. Follow the instructions at <a href="https://mimic-iv.mit.edu/docs/access/" class="uri">https://mimic-iv.mit.edu/docs/access/</a> to (1) complete the CITI <code>Data or Specimens Only Research</code> course and (2) obtain the PhysioNet credential for using the MIMIC-IV data. Display the verification links to your completion report and completion certificate here. (Hint: The CITI training takes a couple hours and the PhysioNet credentialing takes a couple days; do not leave it to the last minute.)</p></li>
+<li>This exercise (and later in this course) uses the <a href="https://mimic-iv.mit.edu">MIMIC-IV data</a>, a freely accessible critical care database developed by the MIT Lab for Computational Physiology. Follow the instructions at <a href="https://mimic-iv.mit.edu/docs/access/" class="uri">https://mimic-iv.mit.edu/docs/access/</a> to (1) complete the CITI <code>Data or Specimens Only Research</code> course and (2) obtain the PhysioNet credential for using the MIMIC-IV data. Display the verification links to your completion report and completion certificate here. (Hint: The CITI training takes a couple hours and the PhysioNet credentialing takes a couple days; do not leave it to the last minute.)</li>
+</ol>
+<p><strong>Solution:</strong> <a href="https://www.citiprogram.org/verify/?k2d22ea07-a433-46a8-ad5a-6a92d7fec6b0-40373283">Course Completion</a></p>
+<pre><code>          [Certificate](https://www.citiprogram.org/verify/?wdf218c49-bd83-40e6-89b3-3d4f2f64d125-40373283)</code></pre>
+<ol start="2" style="list-style-type: decimal">
 <li><p>The <code>/usr/203b-data/mimic-iv/</code> folder on teaching server contains data sets from MIMIC-IV. Refer to <a href="https://mimic-iv.mit.edu/docs/datasets/" class="uri">https://mimic-iv.mit.edu/docs/datasets/</a> for details of data files.</p>
-<pre class="bash"><code>ls -l /home/dshehtanian/</code></pre>
+<pre class="bash"><code>ls -l /usr/203b-data/mimic-iv/</code></pre>
 <pre><code>## total 12
-## drwxr-xr-x.  6 dshehtanian dshehtanian   94 Jan 14 23:56 biostat-203b-2021-winter
-## -rwx------.  1 dshehtanian dshehtanian   19 Jan 14 23:38 hw1.sh
-## -rw-rw-r--.  1 dshehtanian dshehtanian   44 Jan  8 00:47 hw1test.gz
-## drwxr-xr-x.  4 dshehtanian dshehtanian   56 Jan 13 01:59 R
-## drwxrwxr-x.  2 dshehtanian dshehtanian   51 Jan  8 00:00 test-dir
-## drwxrwxr-x. 11 dshehtanian dshehtanian 4096 Jan  7 23:32 ucla-biostat203b-2021winter.github.io</code></pre>
+## drwxr-xr-x. 2 huazhou huazhou   78 Jan 11 02:28 core
+## drwxr-xr-x. 2 huazhou huazhou 4096 Jan 11 02:13 hosp
+## drwxr-xr-x. 2 huazhou huazhou  189 Jan 11 02:25 icu
+## -rw-r--r--. 1 huazhou huazhou 2518 Jan 11 02:13 LICENSE.txt
+## -rw-r--r--. 1 huazhou huazhou 2459 Jan 11 02:13 SHA256SUMS.txt</code></pre>
 <p>Please, do <strong>not</strong> put these data files into Git; they are big. Do <strong>not</strong> copy them into your directory. Do <strong>not</strong> decompress the gz data files. These create unnecessary big files on storage and are not big data friendly practices. Just read from the data folder <code>/usr/203b-data/mimic-iv</code> directly in following exercises.</p>
 <p>Use Bash commands to answer following questions.</p></li>
 <li><p>Display the contents in the folders <code>core</code>, <code>hosp</code>, <code>icu</code>. What are the functionalities of the bash commands <code>zcat</code>, <code>zless</code>, <code>zmore</code>, and <code>zgrep</code>?</p></li>
@@ -421,8 +437,12 @@ summary {
 <h2>Q3. Who’s popular in Price and Prejudice</h2>
 <ol style="list-style-type: decimal">
 <li><p>You and your friend just have finished reading <em>Pride and Prejudice</em> by Jane Austen. Among the four main characters in the book, Elizabeth, Jane, Lydia, and Darcy, your friend thinks that Darcy was the most mentioned. You, however, are certain it was Elizabeth. Obtain the full text of the novel from <a href="http://www.gutenberg.org/cache/epub/42671/pg42671.txt" class="uri">http://www.gutenberg.org/cache/epub/42671/pg42671.txt</a> and save to your local folder.</p>
-<pre class="bash"><code>curl http://www.gutenberg.org/cache/epub/42671/pg42671.txt &gt; pride_and_prejudice.txt</code></pre>
-<p>Do <strong>not</strong> put this text file <code>pride_and_prejudice.txt</code> in Git. Using a <code>for</code> loop, how would you tabulate the number of times each of the four characters is mentioned?</p></li>
+<pre class="bash"><code>curl http://www.gutenberg.org/cache/epub/42671/pg42671.txt &gt; pride_and_prejudice.txt
+cat pride_and_prejudice.txt | grep -o Jane | wc -w</code></pre>
+<pre class="bash"><code>curl http://www.gutenberg.org/cache/epub/42671/pg42671.txt | grep -o Jane | wc -w</code></pre></li>
+</ol>
+<p>Do <strong>not</strong> put this text file <code>pride_and_prejudice.txt</code> in Git. Using a <code>for</code> loop, how would you tabulate the number of times each of the four characters is mentioned?</p>
+<ol start="2" style="list-style-type: decimal">
 <li><p>What’s the difference between the following two commands?</p>
 <pre class="bash"><code>echo &#39;hello, world&#39; &gt; test1.txt</code></pre>
 <p>and</p>
@@ -439,6 +459,59 @@ head -n &quot;$2&quot; &quot;$1&quot; | tail -n &quot;$3&quot;</code></pre>
 <div id="q4.-more-fun-with-linux" class="section level3">
 <h3>Q4. More fun with Linux</h3>
 <p>Try these commands in Bash and interpret the results: <code>cal</code>, <code>cal 2021</code>, <code>cal 9 1752</code> (anything unusual?), <code>date</code>, <code>hostname</code>, <code>arch</code>, <code>uname -a</code>, <code>uptime</code>, <code>who am i</code>, <code>who</code>, <code>w</code>, <code>id</code>, <code>last | head</code>, <code>echo {con,pre}{sent,fer}{s,ed}</code>, <code>time sleep 5</code>, <code>history | tail</code>.</p>
+<p><strong>Solution:</strong></p>
+<p>cal displays the calendar for the current month</p>
+<pre class="bash"><code>cal</code></pre>
+<pre><code>##     January 2021    
+## Su Mo Tu We Th Fr Sa
+##                 1  2
+##  3  4  5  6  7  8  9
+## 10 11 12 13 14 15 16
+## 17 18 19 20 21 22 23
+## 24 25 26 27 28 29 30
+## 31</code></pre>
+<p>cal 2021 displays the calendar for 2021</p>
+<pre class="bash"><code>cal 2021</code></pre>
+<pre><code>##                                2021                               
+## 
+##        January               February                 March       
+## Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+##                 1  2       1  2  3  4  5  6       1  2  3  4  5  6
+##  3  4  5  6  7  8  9    7  8  9 10 11 12 13    7  8  9 10 11 12 13
+## 10 11 12 13 14 15 16   14 15 16 17 18 19 20   14 15 16 17 18 19 20
+## 17 18 19 20 21 22 23   21 22 23 24 25 26 27   21 22 23 24 25 26 27
+## 24 25 26 27 28 29 30   28                     28 29 30 31
+## 31
+##         April                   May                   June        
+## Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+##              1  2  3                      1          1  2  3  4  5
+##  4  5  6  7  8  9 10    2  3  4  5  6  7  8    6  7  8  9 10 11 12
+## 11 12 13 14 15 16 17    9 10 11 12 13 14 15   13 14 15 16 17 18 19
+## 18 19 20 21 22 23 24   16 17 18 19 20 21 22   20 21 22 23 24 25 26
+## 25 26 27 28 29 30      23 24 25 26 27 28 29   27 28 29 30
+##                        30 31
+##         July                  August                September     
+## Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+##              1  2  3    1  2  3  4  5  6  7             1  2  3  4
+##  4  5  6  7  8  9 10    8  9 10 11 12 13 14    5  6  7  8  9 10 11
+## 11 12 13 14 15 16 17   15 16 17 18 19 20 21   12 13 14 15 16 17 18
+## 18 19 20 21 22 23 24   22 23 24 25 26 27 28   19 20 21 22 23 24 25
+## 25 26 27 28 29 30 31   29 30 31               26 27 28 29 30
+## 
+##        October               November               December      
+## Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa   Su Mo Tu We Th Fr Sa
+##                 1  2       1  2  3  4  5  6             1  2  3  4
+##  3  4  5  6  7  8  9    7  8  9 10 11 12 13    5  6  7  8  9 10 11
+## 10 11 12 13 14 15 16   14 15 16 17 18 19 20   12 13 14 15 16 17 18
+## 17 18 19 20 21 22 23   21 22 23 24 25 26 27   19 20 21 22 23 24 25
+## 24 25 26 27 28 29 30   28 29 30               26 27 28 29 30 31
+## 31</code></pre>
+<pre class="bash"><code>cal 9 1752</code></pre>
+<pre><code>##    September 1752   
+## Su Mo Tu We Th Fr Sa
+##        1  2 14 15 16
+## 17 18 19 20 21 22 23
+## 24 25 26 27 28 29 30</code></pre>
 </div>
 </div>
 

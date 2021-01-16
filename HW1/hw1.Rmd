@@ -43,13 +43,17 @@ sessionInfo()
 
 1. This exercise (and later in this course) uses the [MIMIC-IV data](https://mimic-iv.mit.edu), a freely accessible critical care database developed by the MIT Lab for Computational Physiology. Follow the instructions at <https://mimic-iv.mit.edu/docs/access/> to (1) complete the CITI `Data or Specimens Only Research` course and (2) obtain the PhysioNet credential for using the MIMIC-IV data. Display the verification links to your completion report and completion certificate here. (Hint: The CITI training takes a couple hours and the PhysioNet credentialing takes a couple days; do not leave it to the last minute.)
 
-**Solution:** [Course Completion](insert url)
-              [Certificate](insert url)
+**Solution:** 
+[Course Completion](https://www.citiprogram.org/verify/?k2d22ea07-a433-46a8-ad5a-6a92d7fec6b0-40373283)
+
+[Certificate](https://www.citiprogram.org/verify/?wdf218c49-bd83-40e6-89b3-3d4f2f64d125-40373283)
 
 2. The `/usr/203b-data/mimic-iv/` folder on teaching server contains data sets from MIMIC-IV. Refer to <https://mimic-iv.mit.edu/docs/datasets/> for details of data files.  
+
     ```{bash}
     ls -l /usr/203b-data/mimic-iv/
     ```
+
 Please, do **not** put these data files into Git; they are big. Do **not** copy them into your directory. Do **not** decompress the gz data files. These create unnecessary big files on storage and are not big data friendly practices. Just read from the data folder `/usr/203b-data/mimic-iv` directly in following exercises. 
 
     Use Bash commands to answer following questions.
