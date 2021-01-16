@@ -100,6 +100,7 @@ Display the number of lines in each data file using a similar loop.
 
 ```{bash}
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | head
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | wc -l
 
 ```
 
