@@ -65,8 +65,9 @@ Please, do **not** put these data files into Git; they are big. Do **not** copy 
 
 **Solution:**
 ```{bash}
-ls -l /usr/203b-data/mimic-iv/core /usr/203b-data/mimic-iv/hosp /usr/203b-data/mimic-iv/icu
+ls -l /usr/203b-data/mimic-iv/*
 ```
+
 zcat - Prints the contents of files which are compressed.
 zmore - Allows reading through text of compressed files one screen at a time.
         Only allows for forward movement.
@@ -100,8 +101,29 @@ Display the number of lines in each data file using a similar loop.
 
 ```{bash}
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | head
+  echo "# of rows:" 
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | wc -l
-
+  tot= $(zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $1}' | tail -n+2 | sort -u | wc -l)
+  echo "# of unique patients"
+  echo $(( $tot-1 ))
+  echo "Possible values of" 
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $6}' | head -n 1
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $6}' | tail -n+2 | sort -u
+  echo "Possible values of" 
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $7}' | head -n 1
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $7}' | tail -n+2 | sort -u
+  echo "Possible values of" 
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $9}' | head -n 1
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $9}' | tail -n+2 | sort -u
+  echo "Possible values of" 
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $10}' | head -n 1
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $10}' | tail -n+2 | sort -u
+  echo "Possible values of" 
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $11}' | head -n 1
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $11}' | tail -n+2 | sort -u
+  echo "Possible values of" 
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $12}' | head -n 1
+  zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz | awk -F, '{print $12}' | tail -n+2 | sort -u
 ```
 
 ## Q3. Who's popular in Price and Prejudice
@@ -147,6 +169,7 @@ Using `chmod` make the file executable by the owner, and run
     chmod 770 ./middle.sh
     ./middle.sh pride_and_prejudice.txt 20 5
     ```
+
 Explain the output. Explain the meaning of `"$1"`, `"$2"`, and `"$3"` in this shell script. Why do we need the first line of the shell script?
 
 **Solution:** This script outputs lines 16-20 of the text of Pride and Prejudice. It first outputs the first 20 lines of pride_and_prejudice.txt, and then it outputs the last 5 lines of the prior output to the terminal. By adjusting the arguments we can change the file, the number of lines starting from the beginning output and the number of lines from the end of that, which are output to the terminal.
