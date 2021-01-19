@@ -176,7 +176,7 @@ Possible values taken by ethnicity.
 Do **not** put this text file `pride_and_prejudice.txt` in Git. Using a `for` loop, how would you tabulate the number of times each of the four characters is mentioned?
 
 **Solution:**
-    ```{bash, eval=F}
+    ```{bash}
     for name in {Elizabeth,Jane,Lydia,Darcy}
       do
         ment=$(grep -o $name ./pride_and_prejudice.txt | wc -l)
@@ -205,7 +205,7 @@ Do **not** put this text file `pride_and_prejudice.txt` in Git. Using a `for` lo
     head -n "$2" "$1" | tail -n "$3"
     ```
 Using `chmod` make the file executable by the owner, and run 
-    ```{bash eval=FALSE}
+    ```{bash}
     chmod 770 ./middle.sh
     ./middle.sh pride_and_prejudice.txt 20 5
     ```

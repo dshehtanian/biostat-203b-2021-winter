@@ -629,6 +629,13 @@ for name in {Elizabeth,Jane,Lydia,Darcy}
     ment=$(grep -o $name ./pride_and_prejudice.txt | wc -l)
     echo &quot;$name is mentioned $ment times.&quot;
   done
+```
+
+```
+## Elizabeth is mentioned 634 times.
+## Jane is mentioned 294 times.
+## Lydia is mentioned 170 times.
+## Darcy is mentioned 417 times.
 ```</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li><p>What’s the difference between the following two commands?</p>
@@ -645,7 +652,12 @@ for name in {Elizabeth,Jane,Lydia,Darcy}
 head -n &quot;$2&quot; &quot;$1&quot; | tail -n &quot;$3&quot;</code></pre>
 <p>Using <code>chmod</code> make the file executable by the owner, and run</p>
 <pre class="bash"><code>chmod 770 ./middle.sh
-./middle.sh pride_and_prejudice.txt 20 5</code></pre></li>
+./middle.sh pride_and_prejudice.txt 20 5</code></pre>
+<pre><code>## 
+## Author: Jane Austen
+## 
+## Editor: R. W. (Robert William) Chapman
+## </code></pre></li>
 </ol>
 <p>Explain the output. Explain the meaning of <code>&quot;$1&quot;</code>, <code>&quot;$2&quot;</code>, and <code>&quot;$3&quot;</code> in this shell script. Why do we need the first line of the shell script?</p>
 <p><strong>Solution:</strong> This script outputs lines 16-20 of the text of Pride and Prejudice. It first outputs the first 20 lines of pride_and_prejudice.txt, and then it outputs the last 5 lines of the prior output to the terminal. By adjusting the arguments we can change the file, the number of lines starting from the beginning output and the number of lines from the end of that, which are output to the terminal. “$1”,“$2”, and “$3” refer to the arguments taken by the shell script. “$1” is the first argument (in this case pride_and_prejudice.txt). “$2” and “$3” refer to 20 and 5 respectively from the example. This allows the script to take a variety of arguments.</p>
@@ -708,7 +720,7 @@ head -n &quot;$2&quot; &quot;$1&quot; | tail -n &quot;$3&quot;</code></pre>
 ## 24 25 26 27 28 29 30</code></pre>
 <p>date lists the current date and time</p>
 <pre class="bash"><code>date</code></pre>
-<pre><code>## Sun Jan 17 18:29:45 UTC 2021</code></pre>
+<pre><code>## Tue Jan 19 19:49:30 UTC 2021</code></pre>
 <p>hostname shows the system’s host name</p>
 <pre class="bash"><code>hostname</code></pre>
 <pre><code>## ucla-biostat-203b</code></pre>
@@ -720,35 +732,35 @@ head -n &quot;$2&quot; &quot;$1&quot; | tail -n &quot;$3&quot;</code></pre>
 <pre><code>## Linux ucla-biostat-203b 3.10.0-1160.6.1.el7.x86_64 #1 SMP Tue Nov 17 13:59:11 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux</code></pre>
 <p>uptime lists how long since the last system reboot</p>
 <pre class="bash"><code>uptime</code></pre>
-<pre><code>##  18:29:45 up 13 days, 20:40,  2 users,  load average: 0.62, 0.26, 0.22</code></pre>
+<pre><code>##  19:49:30 up 15 days, 22:00,  2 users,  load average: 0.40, 0.20, 0.16</code></pre>
 <p>whoami prints the userid of the user</p>
 <pre class="bash"><code>whoami</code></pre>
 <pre><code>## dshehtanian</code></pre>
 <p>who prints info about the currently logged in user (who they are, when and where they logged in from)</p>
 <pre class="bash"><code>who</code></pre>
-<pre><code>## filipovicmilan271 pts/0        2021-01-17 17:43 (ip70-181-107-212.oc.oc.cox.net)
-## dshehtanian pts/4        2021-01-17 17:58 (cpe-45-51-98-96.socal.res.rr.com)</code></pre>
+<pre><code>## jihcai   pts/4        2021-01-19 18:36 (ip68-6-101-100.sb.sd.cox.net)
+## andyliugraduateschool pts/6        2021-01-19 19:48 (c-65-50-147-213.hs.gigamonster.net)</code></pre>
 <p>w prints information about the currently logged in user, what they are doing and uptime information</p>
 <pre class="bash"><code>w</code></pre>
-<pre><code>##  18:29:45 up 13 days, 20:40,  2 users,  load average: 0.62, 0.26, 0.22
+<pre><code>##  19:49:30 up 15 days, 22:00,  2 users,  load average: 0.40, 0.20, 0.16
 ## USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
-## filipovi pts/0    ip70-181-107-212 17:43   30:41   0.03s  0.03s -bash
-## dshehtan pts/4    cpe-45-51-98-96. 17:58   11:21   0.24s  0.24s -bash</code></pre>
+## jihcai   pts/4    ip68-6-101-100.s 18:36    2.00s  0.58s  0.50s -bash
+## andyliug pts/6    c-65-50-147-213. 19:48   34.00s  0.02s  0.02s -bash</code></pre>
 <p>id prints the user id and group ids for the user</p>
 <pre class="bash"><code>id</code></pre>
 <pre><code>## uid=1025(dshehtanian) gid=1027(dshehtanian) groups=1027(dshehtanian) context=system_u:system_r:initrc_t:s0</code></pre>
 <p>last | head shows a list of the last ten logins to the computer</p>
 <pre class="bash"><code>last | head</code></pre>
-<pre><code>## dshehtan pts/4        cpe-45-51-98-96. Sun Jan 17 17:58   still logged in   
-## dshehtan pts/4        cpe-45-51-98-96. Sun Jan 17 17:54 - 17:58  (00:03)    
-## filipovi pts/0        ip70-181-107-212 Sun Jan 17 17:43   still logged in   
-## filipovi pts/0        ip70-181-107-212 Sun Jan 17 17:35 - 17:42  (00:07)    
-## hunanzho pts/0        47.145.197.173   Sun Jan 17 13:37 - 14:20  (00:42)    
-## hunanzho pts/0        47.145.197.173   Sun Jan 17 11:09 - 12:08  (00:58)    
-## elviscui pts/0        125.118.175.159  Sun Jan 17 06:39 - 07:20  (00:41)    
-## yingyanw pts/4        s-164-67-234-221 Sun Jan 17 05:25 - 05:26  (00:00)    
-## OLIVIAGO pts/4        108-64-213-148.l Sun Jan 17 03:39 - 03:58  (00:18)    
-## OLIVIAGO pts/2        108-64-213-148.l Sun Jan 17 03:03 - 03:31  (00:28)</code></pre>
+<pre><code>## andyliug pts/6        c-65-50-147-213. Tue Jan 19 19:48   still logged in   
+## jihcai   pts/4        ip68-6-101-100.s Tue Jan 19 18:36   still logged in   
+## mia.chen pts/1        154.17.12.93     Tue Jan 19 14:24 - 14:47  (00:22)    
+## mia.chen pts/0        154.17.12.93     Tue Jan 19 14:10 - 14:31  (00:20)    
+## mia.chen pts/0        154.17.12.93     Tue Jan 19 14:08 - 14:09  (00:01)    
+## jihcai   pts/7        ip68-6-101-100.s Tue Jan 19 07:48 - 09:27  (01:38)    
+## germc3   pts/0        149.142.80.37    Tue Jan 19 06:53 - 08:47  (01:53)    
+## huazhou  pts/6        108-64-58-205.li Tue Jan 19 05:48 - 07:06  (01:18)    
+## kmli     pts/1        ip68-110-213-196 Tue Jan 19 03:03 - 03:27  (00:24)    
+## kmli     pts/1        ip68-110-213-196 Tue Jan 19 02:59 - 03:02  (00:02)</code></pre>
 <p>echo {con,pre}{sent,fer}{s,ed} outputs a list of all possible combinations of the listed strings in each set of brackets, remaining in the same order.</p>
 <pre class="bash"><code>echo {con,pre}{sent,fer}{s,ed}</code></pre>
 <pre><code>## consents consented confers confered presents presented prefers prefered</code></pre>
