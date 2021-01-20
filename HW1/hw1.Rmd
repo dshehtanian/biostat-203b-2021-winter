@@ -284,6 +284,8 @@ time sleep 5
 ```
 history | tail lists the last ten commands inputted into the terminal
 ``` {bash}
+set -o history
+echo 'hi'
 history | tail
 ```
 
