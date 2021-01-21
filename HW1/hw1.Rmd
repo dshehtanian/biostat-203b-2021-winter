@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 Display machine information for reproducibility:
-```{r, eval=F}
+```{r}
 sessionInfo()
 ```
 
@@ -70,10 +70,13 @@ ls -l /usr/203b-data/mimic-iv/core /usr/203b-data/mimic-iv/hosp \
 ```
 
 zcat - Prints the contents of files which are compressed.
+
 zmore - Allows reading through text of compressed files one screen at a time.
         Only allows for forward movement.
+        
 zless - Allows reading through text of compressed files one screen at a time.
         Allows for forward and backward movement and scrolling.
+        
 zgrep - Allows for searching compressed files for strings/regular expressions.
 
 4. What's the output of following bash script?
@@ -96,7 +99,7 @@ Display the number of lines in each data file using a similar loop.
       done
     ```
 
-4. Display the first few lines of `admissions.csv.gz`. How many rows are in this data file? How many unique patients (identified by `subject_id`) are in this data file? What are the possible values taken by each of the variable `admission_type`, `admission_location`, `insurance`, `language`, `marital_status`, and `ethnicity`? Also report the count for each unique value of these variables. (Hint: combine Linux commands `zcat`, `head`/`tail`, `awk`, `uniq`, `wc`, and so on.)
+5. Display the first few lines of `admissions.csv.gz`. How many rows are in this data file? How many unique patients (identified by `subject_id`) are in this data file? What are the possible values taken by each of the variable `admission_type`, `admission_location`, `insurance`, `language`, `marital_status`, and `ethnicity`? Also report the count for each unique value of these variables. (Hint: combine Linux commands `zcat`, `head`/`tail`, `awk`, `uniq`, `wc`, and so on.)
 
 **Solution:** 
 Displaying the first few lines of the file.
@@ -176,13 +179,14 @@ Possible values taken by ethnicity.
 Do **not** put this text file `pride_and_prejudice.txt` in Git. Using a `for` loop, how would you tabulate the number of times each of the four characters is mentioned?
 
 **Solution:**
-    ```{bash}
+```{bash}
     for name in {Elizabeth,Jane,Lydia,Darcy}
       do
         ment=$(grep -o $name ./pride_and_prejudice.txt | wc -l)
         echo "$name is mentioned $ment times."
       done
-    ```
+```
+Elizabeth is mentioned the most.
 
 2. What's the difference between the following two commands?
     ```{bash eval=FALSE}
@@ -212,8 +216,8 @@ Using `chmod` make the file executable by the owner, and run
 
 Explain the output. Explain the meaning of `"$1"`, `"$2"`, and `"$3"` in this shell script. Why do we need the first line of the shell script?
 
-**Solution:** This script outputs lines 16-20 of the text of Pride and Prejudice. It first outputs the first 20 lines of pride_and_prejudice.txt, and then it outputs the last 5 lines of the prior output to the terminal. By adjusting the arguments we can change the file, the number of lines starting from the beginning output and the number of lines from the end of that, which are output to the terminal.
-  "$1","$2", and "$3" refer to the arguments taken by the shell script. "$1" is the first argument (in this case pride_and_prejudice.txt). "$2" and "$3" refer to 20 and 5 respectively from the example. This allows the script to take a variety of arguments.
+**Solution:** This script outputs a section from the middle of a file, in this case lines 16-20 of the text of Pride and Prejudice. It first outputs the first 20 lines of pride_and_prejudice.txt, and then it outputs the last 5 lines of the prior output to the terminal. By adjusting the arguments we can change the file, the number of lines starting from the beginning output and the number of lines from the end of that, which are output to the terminal.
+  "$1","$2", and "$3" refer to the arguments taken by the shell script. "$1" is the first argument (in this case pride_and_prejudice.txt). "$2" and "$3" refer to the second and third arguments (20 and 5 respectively from the example). This allows the script to take a variety of arguments.
 
 ### Q4. More fun with Linux
 
@@ -258,11 +262,11 @@ whoami prints the userid of the user
 ``` {bash}
 whoami
 ```
-who prints info about the currently logged in user (who they are, when and where they logged in from)
+who prints info about the currently logged in users (who they are, when and where they logged in from)
 ``` {bash}
 who
 ```
-w prints information about the currently logged in user, what they are doing and uptime information
+w prints information about the currently logged in users, what they are doing and uptime information
 ``` {bash}
 w
 ```
@@ -278,7 +282,7 @@ echo {con,pre}{sent,fer}{s,ed} outputs a list of all possible combinations of th
 ``` {bash}
 echo {con,pre}{sent,fer}{s,ed}
 ```
-time sleep 5 times how long it takes to execute the sleep 5 command, which tells the system to wait for 5 seconds before continuing
+time sleep 5 shows how long it takes to execute the sleep 5 command, which tells the system to wait for 5 seconds before continuing
 ``` {bash}
 time sleep 5
 ```
