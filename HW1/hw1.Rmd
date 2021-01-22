@@ -121,7 +121,7 @@ Possible values taken by admission_type.
   | awk -F, '{print $6}' | head -n 1
   echo ''
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, '{print $6}' | tail -n+2 | sort -u
+  | awk -F, '{print $6}' | tail -n+2 | sort | uniq -c
 ```
 Possible values taken by admission_location.
 ```{bash}
@@ -130,7 +130,7 @@ Possible values taken by admission_location.
   | awk -F, '{print $7}' | head -n 1
   echo ''
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, '{print $7}' | tail -n+2 | sort -u
+  | awk -F, '{print $7}' | tail -n+2 | sort | uniq -c
 ```
 Possible values taken by insurance.
 ```{bash}
@@ -139,7 +139,7 @@ Possible values taken by insurance.
   | awk -F, '{print $9}' | head -n 1
   echo ''
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, '{print $9}' | tail -n+2 | sort -u
+  | awk -F, '{print $9}' | tail -n+2 | sort | uniq -c
 ```
 Possible values taken by language.
 ```{bash}
@@ -148,7 +148,7 @@ Possible values taken by language.
   | awk -F, '{print $10}' | head -n 1
   echo ''
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, '{print $10}' | tail -n+2 | sort -u
+  | awk -F, '{print $10}' | tail -n+2 | sort | uniq -c
 ```
 Possible values taken by marital_status.
 ```{bash}
@@ -157,7 +157,7 @@ Possible values taken by marital_status.
   | awk -F, '{print $11}' | head -n 1
   echo ''
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, '{print $11}' | tail -n+2 | sort -u
+  | awk -F, '{print $11}' | tail -n+2 | sort | uniq -c
 ```
 Possible values taken by ethnicity.
 ```{bash}
@@ -166,7 +166,7 @@ Possible values taken by ethnicity.
   | awk -F, '{print $12}' | head -n 1
   echo ''
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, '{print $12}' | tail -n+2 | sort -u
+  | awk -F, '{print $12}' | tail -n+2 | sort | uniq -c
 ```
 
 ## Q3. Who's popular in Price and Prejudice

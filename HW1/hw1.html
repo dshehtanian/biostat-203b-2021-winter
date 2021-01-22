@@ -547,99 +547,99 @@ for datafile in /usr/203b-data/mimic-iv/core/*.gz
   | awk -F, &#39;{print $6}&#39; | head -n 1
   echo &#39;&#39;
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, &#39;{print $6}&#39; | tail -n+2 | sort -u</code></pre>
+  | awk -F, &#39;{print $6}&#39; | tail -n+2 | sort | uniq -c</code></pre>
 <pre><code>## Possible values of
 ## admission_type
 ## 
-## AMBULATORY OBSERVATION
-## DIRECT EMER.
-## DIRECT OBSERVATION
-## ELECTIVE
-## EU OBSERVATION
-## EW EMER.
-## OBSERVATION ADMIT
-## SURGICAL SAME DAY ADMISSION
-## URGENT</code></pre>
+##    7259 AMBULATORY OBSERVATION
+##   21595 DIRECT EMER.
+##   20014 DIRECT OBSERVATION
+##   72077 ELECTIVE
+##  100938 EU OBSERVATION
+##  158032 EW EMER.
+##   55532 OBSERVATION ADMIT
+##   41103 SURGICAL SAME DAY ADMISSION
+##   47970 URGENT</code></pre>
 <p>Possible values taken by admission_location.</p>
 <pre class="bash"><code>  echo &quot;Possible values of&quot; 
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
   | awk -F, &#39;{print $7}&#39; | head -n 1
   echo &#39;&#39;
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, &#39;{print $7}&#39; | tail -n+2 | sort -u</code></pre>
+  | awk -F, &#39;{print $7}&#39; | tail -n+2 | sort | uniq -c</code></pre>
 <pre><code>## Possible values of
 ## admission_location
 ## 
-## 
-## AMBULATORY SURGERY TRANSFER
-## CLINIC REFERRAL
-## EMERGENCY ROOM
-## INFORMATION NOT AVAILABLE
-## INTERNAL TRANSFER TO OR FROM PSYCH
-## PACU
-## PHYSICIAN REFERRAL
-## PROCEDURE SITE
-## TRANSFER FROM HOSPITAL
-## TRANSFER FROM SKILLED NURSING FACILITY
-## WALK-IN/SELF REFERRAL</code></pre>
+##   60437 
+##     191 AMBULATORY SURGERY TRANSFER
+##   10678 CLINIC REFERRAL
+##  246241 EMERGENCY ROOM
+##     379 INFORMATION NOT AVAILABLE
+##    4484 INTERNAL TRANSFER TO OR FROM PSYCH
+##    6075 PACU
+##  127648 PHYSICIAN REFERRAL
+##    8453 PROCEDURE SITE
+##   39150 TRANSFER FROM HOSPITAL
+##    4069 TRANSFER FROM SKILLED NURSING FACILITY
+##   16715 WALK-IN/SELF REFERRAL</code></pre>
 <p>Possible values taken by insurance.</p>
 <pre class="bash"><code>  echo &quot;Possible values of&quot; 
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
   | awk -F, &#39;{print $9}&#39; | head -n 1
   echo &#39;&#39;
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, &#39;{print $9}&#39; | tail -n+2 | sort -u</code></pre>
+  | awk -F, &#39;{print $9}&#39; | tail -n+2 | sort | uniq -c</code></pre>
 <pre><code>## Possible values of
 ## insurance
 ## 
-## Medicaid
-## Medicare
-## Other</code></pre>
+##   50962 Medicaid
+##  171492 Medicare
+##  302066 Other</code></pre>
 <p>Possible values taken by language.</p>
 <pre class="bash"><code>  echo &quot;Possible values of&quot; 
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
   | awk -F, &#39;{print $10}&#39; | head -n 1
   echo &#39;&#39;
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, &#39;{print $10}&#39; | tail -n+2 | sort -u</code></pre>
+  | awk -F, &#39;{print $10}&#39; | tail -n+2 | sort | uniq -c</code></pre>
 <pre><code>## Possible values of
 ## language
 ## 
-## ?
-## ENGLISH</code></pre>
+##   46231 ?
+##  478289 ENGLISH</code></pre>
 <p>Possible values taken by marital_status.</p>
 <pre class="bash"><code>  echo &quot;Possible values of&quot; 
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
   | awk -F, &#39;{print $11}&#39; | head -n 1
   echo &#39;&#39;
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, &#39;{print $11}&#39; | tail -n+2 | sort -u</code></pre>
+  | awk -F, &#39;{print $11}&#39; | tail -n+2 | sort | uniq -c</code></pre>
 <pre><code>## Possible values of
 ## marital_status
 ## 
-## 
-## DIVORCED
-## MARRIED
-## SINGLE
-## WIDOWED</code></pre>
+##   66133 
+##   33762 DIVORCED
+##  195326 MARRIED
+##  180453 SINGLE
+##   48846 WIDOWED</code></pre>
 <p>Possible values taken by ethnicity.</p>
 <pre class="bash"><code>  echo &quot;Possible values of&quot; 
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
   | awk -F, &#39;{print $12}&#39; | head -n 1
   echo &#39;&#39;
   zcat /usr/203b-data/mimic-iv/core/admissions.csv.gz \
-  | awk -F, &#39;{print $12}&#39; | tail -n+2 | sort -u</code></pre>
+  | awk -F, &#39;{print $12}&#39; | tail -n+2 | sort | uniq -c</code></pre>
 <pre><code>## Possible values of
 ## ethnicity
 ## 
-## AMERICAN INDIAN/ALASKA NATIVE
-## ASIAN
-## BLACK/AFRICAN AMERICAN
-## HISPANIC/LATINO
-## OTHER
-## UNABLE TO OBTAIN
-## UNKNOWN
-## WHITE</code></pre>
+##    1536 AMERICAN INDIAN/ALASKA NATIVE
+##   24522 ASIAN
+##   80526 BLACK/AFRICAN AMERICAN
+##   29887 HISPANIC/LATINO
+##   26844 OTHER
+##    3742 UNABLE TO OBTAIN
+##   19419 UNKNOWN
+##  338044 WHITE</code></pre>
 </div>
 <div id="q3.-whos-popular-in-price-and-prejudice" class="section level2">
 <h2>Q3. Who’s popular in Price and Prejudice</h2>
@@ -742,7 +742,7 @@ head -n &quot;$2&quot; &quot;$1&quot; | tail -n &quot;$3&quot;</code></pre>
 ## 24 25 26 27 28 29 30</code></pre>
 <p>date lists the current date and time</p>
 <pre class="bash"><code>date</code></pre>
-<pre><code>## Thu Jan 21 05:39:48 UTC 2021</code></pre>
+<pre><code>## Fri Jan 22 05:50:52 UTC 2021</code></pre>
 <p>hostname shows the system’s host name</p>
 <pre class="bash"><code>hostname</code></pre>
 <pre><code>## ucla-biostat-203b</code></pre>
@@ -754,35 +754,37 @@ head -n &quot;$2&quot; &quot;$1&quot; | tail -n &quot;$3&quot;</code></pre>
 <pre><code>## Linux ucla-biostat-203b 3.10.0-1160.6.1.el7.x86_64 #1 SMP Tue Nov 17 13:59:11 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux</code></pre>
 <p>uptime lists how long since the last system reboot</p>
 <pre class="bash"><code>uptime</code></pre>
-<pre><code>##  05:39:48 up 17 days,  7:50,  2 users,  load average: 0.23, 0.13, 0.14</code></pre>
+<pre><code>##  05:50:52 up 18 days,  8:01,  3 users,  load average: 0.55, 0.35, 0.37</code></pre>
 <p>whoami prints the userid of the user</p>
 <pre class="bash"><code>whoami</code></pre>
 <pre><code>## dshehtanian</code></pre>
 <p>who prints info about the currently logged in users (who they are, when and where they logged in from)</p>
 <pre class="bash"><code>who</code></pre>
-<pre><code>## valentina214 pts/4        2021-01-21 04:57 (47.156.178.126)
-## linyuzhou pts/5        2021-01-21 05:32 (s-169-232-70-224.resnet.ucla.edu)</code></pre>
+<pre><code>## angelicaruiz pts/0        2021-01-22 05:33 (cpe-108-185-43-213.socal.res.rr.com)
+## filipovicmilan271 pts/7        2021-01-21 06:03 (110.3.236.35.bc.googleusercontent.com)
+## tibbe1td pts/10       2021-01-22 05:19 (c-68-55-91-32.hsd1.mi.comcast.net)</code></pre>
 <p>w prints information about the currently logged in users, what they are doing and uptime information</p>
 <pre class="bash"><code>w</code></pre>
-<pre><code>##  05:39:48 up 17 days,  7:50,  2 users,  load average: 0.23, 0.13, 0.14
+<pre><code>##  05:50:52 up 18 days,  8:01,  3 users,  load average: 0.55, 0.35, 0.37
 ## USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
-## valentin pts/4    47.156.178.126   04:57   40:12   0.02s  0.02s -bash
-## linyuzho pts/5    s-169-232-70-224 05:32    6:50   0.01s  0.01s -bash</code></pre>
+## angelica pts/0    cpe-108-185-43-2 05:33    7:16   0.02s  0.02s -bash
+## filipovi pts/7    110.3.236.35.bc. Thu06   23:41m  0.06s  0.06s -bash
+## tibbe1td pts/10   c-68-55-91-32.hs 05:19    1:56   0.06s  0.00s less -s</code></pre>
 <p>id prints the user id and group ids for the user</p>
 <pre class="bash"><code>id</code></pre>
 <pre><code>## uid=1025(dshehtanian) gid=1027(dshehtanian) groups=1027(dshehtanian) context=system_u:system_r:initrc_t:s0</code></pre>
 <p>last | head shows a list of the last ten logins to the computer</p>
 <pre class="bash"><code>last | head</code></pre>
-<pre><code>## linyuzho pts/5        s-169-232-70-224 Thu Jan 21 05:32   still logged in   
-## kmishimo pts/6        ip174-67-246-239 Thu Jan 21 05:00 - 05:32  (00:32)    
-## haoyunj  pts/5        101.93.71.50     Thu Jan 21 04:59 - 05:04  (00:04)    
-## valentin pts/4        47.156.178.126   Thu Jan 21 04:57   still logged in   
-## kmishimo pts/4        ip174-67-246-239 Thu Jan 21 04:35 - 04:53  (00:18)    
-## haoyunj  pts/1        101.93.71.50     Thu Jan 21 04:33 - 05:15  (00:41)    
-## haoyunj  pts/1        101.93.71.50     Thu Jan 21 04:31 - 04:33  (00:02)    
-## haoyunj  pts/4        101.93.71.50     Thu Jan 21 04:22 - 04:29  (00:07)    
-## kmishimo pts/1        ip174-67-246-239 Thu Jan 21 04:15 - 04:26  (00:10)    
-## asburyse pts/4        c-67-171-189-1.h Thu Jan 21 02:05 - 03:04  (00:58)</code></pre>
+<pre><code>## angelica pts/0        cpe-108-185-43-2 Fri Jan 22 05:33   still logged in   
+## tibbe1td pts/10       c-68-55-91-32.hs Fri Jan 22 05:19   still logged in   
+## angelica pts/4        ucla-biostat-203 Fri Jan 22 04:48 - 05:33  (00:44)    
+## ajedward pts/5        cpe-98-149-10-21 Fri Jan 22 04:16 - 04:53  (00:37)    
+## angelica pts/0        cpe-108-185-43-2 Fri Jan 22 02:47 - 05:33  (02:45)    
+## wzdbruin pts/0        112.32.10.108    Fri Jan 22 01:53 - 02:24  (00:30)    
+## wzdbruin pts/5        112.32.10.108    Fri Jan 22 01:31 - 01:56  (00:25)    
+## alvinw   pts/21       cpe-172-112-186- Fri Jan 22 01:14 - 02:26  (01:11)    
+## wzdbruin pts/19       112.32.10.108    Fri Jan 22 01:09 - 01:30  (00:21)    
+## wzdbruin pts/5        112.32.10.108    Fri Jan 22 00:56 - 01:26  (00:30)</code></pre>
 <p>echo {con,pre}{sent,fer}{s,ed} outputs a list of all possible combinations of the listed strings in each set of brackets, remaining in the same order.</p>
 <pre class="bash"><code>echo {con,pre}{sent,fer}{s,ed}</code></pre>
 <pre><code>## consents consented confers confered presents presented prefers prefered</code></pre>
@@ -790,7 +792,7 @@ head -n &quot;$2&quot; &quot;$1&quot; | tail -n &quot;$3&quot;</code></pre>
 <pre class="bash"><code>time sleep 5</code></pre>
 <pre><code>## 
 ## real 0m5.002s
-## user 0m0.002s
+## user 0m0.001s
 ## sys  0m0.000s</code></pre>
 <p>history | tail lists the last ten commands inputted into the terminal</p>
 <pre class="bash"><code>set -o history
