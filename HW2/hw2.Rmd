@@ -1,10 +1,8 @@
 ---
 title: "Biostat 203B Homework 2"
+author: Dominic Shehtanian
 subtitle: Due Feb 5 @ 11:59PM
-output: 
-  html_document:
-    toc: true
-    toc_depth: 4 
+output: html_document
 ---
 
 Display machine information for reproducibility:
@@ -37,6 +35,11 @@ system(str_c("tree -s -L 2 ", shQuote(mimic_path)), intern = TRUE)
 ## Q1. PhysioNet credential
 
 At this moment, you should already get credentialed on the PhysioNet. Please include a screenshot of your `Data Use Agreement for the MIMIC-IV (v0.4)`.
+
+**Solution:**
+![PhysioNet Credential](./credential.PNG)
+
+Note: In order for the image to appear when this document is knitted, the image file (credential.PNG) must be in same directory as this RMarkdown file.
 
 ## Q2. `read.csv` (base R) vs `read_csv` (tidyverse) vs `fread` (data.table)
 
