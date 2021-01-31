@@ -21,8 +21,8 @@ library(lubridate)
 os <- sessionInfo()$running
 if (str_detect(os, "Linux")) {
   mimic_path <- "/usr/203b-data/mimic-iv"
-} else if (str_detect(os, "macOS")) {
-  mimic_path <- "/Users/huazhou/Documents/Box Sync/MIMIC/mimic-iv-0.4"
+} else if (str_detect(os, "Windows")) {
+  mimic_path <- "C:/Users/dsheh/OneDrive - UCLA IT Services/RProjects/203B/datasets"
 }
 ```
 
@@ -43,9 +43,23 @@ Note: In order for the image to appear when this document is knitted, the image 
 
 ## Q2. `read.csv` (base R) vs `read_csv` (tidyverse) vs `fread` (data.table)
 
+
 There are quite a few utilities in R for reading data files. Let us test the speed of reading a moderate sized compressed csv file, `admissions.csv.gz`, by three programs: `read.csv` in base R, `read_csv` in tidyverse, and `fread` in the popular data.table package. Is there any speed difference?
 
 In this homework, we stick to the tidyverse. 
+
+**Solution:**
+```{r}
+read.csv("/usr/203b-data/mimic-iv/core/admissions.csv.gz", header=TRUE)
+```
+
+```{r}
+read_csv("/usr/203b-data/mimic-iv/core/admissions.csv.gz")
+```
+
+```{r}
+fread("/usr/203b-data/mimic-iv/core/admissions.csv.gz", header=TRUE)
+```
 
 ## Q3. ICU stays
 
@@ -56,6 +70,13 @@ In this homework, we stick to the tidyverse.
 - length of ICU stay  
 - first ICU unit  
 - last ICU unit  
+
+**Solution:**
+
+```{r}
+read_csv("/usr/203b-data/mimic-iv/icu/icustays.csv.gz")
+
+```
 
 ## Q4. `admission` data
 
