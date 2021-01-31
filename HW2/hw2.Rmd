@@ -89,8 +89,35 @@ The exact timing will vary based on the environment in which these are ran and r
 **Solution:**
 
 ```{r}
-read_csv("/usr/203b-data/mimic-iv/icu/icustays.csv.gz")
+icu_table<-read_csv("/usr/203b-data/mimic-iv/icu/icustays.csv.gz")
+```
+Number of unique stay_id:
+```{r}
+icu_table %>% distinct(stay_id) %>% nrow()
+```
+Number of unique subject_id:
+```{r}
+icu_table %>% distinct(subject_id) %>% nrow()
+```
+Length of ICU stay:
+```{r}
+icu_table %>% summarise(Avg=mean(los), StDev=sd(los), Min=min(los), Q1=quantile
+(los, 0.25), Median=quantile(los, 0.5), Q3=quantile(los, 0.75), Max=max(los))
 
+```
+```{r}
+ggplot(icu_table, aes(los)) + geom_histogram(binwidth = 1)
+```
+
+First ICU unit
+```{r}
+ggplot(icu_table,aes(first_careunit))+ geom_bar() +  
+theme(axis.text.x=element_text(angle=90))
+```
+Last ICU unit
+```{r}
+ggplot(icu_table,aes(last_careunit))+ geom_bar() +  
+theme(axis.text.x=element_text(angle=90))
 ```
 
 ## Q4. `admission` data
