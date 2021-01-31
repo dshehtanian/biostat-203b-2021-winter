@@ -49,17 +49,32 @@ There are quite a few utilities in R for reading data files. Let us test the spe
 In this homework, we stick to the tidyverse. 
 
 **Solution:**
+I stored the admissions data so that is does not create a massive output in the knitted document.
 ```{r}
-read.csv("/usr/203b-data/mimic-iv/core/admissions.csv.gz", header=TRUE)
+a<-now()
+ad1<-read.csv("/usr/203b-data/mimic-iv/core/admissions.csv.gz", header=TRUE)
+b<-now()
+b-a
 ```
 
 ```{r}
-read_csv("/usr/203b-data/mimic-iv/core/admissions.csv.gz")
+a<-now()
+ad2<-read_csv("/usr/203b-data/mimic-iv/core/admissions.csv.gz")
+b<-now()
+b-a
+
 ```
 
 ```{r}
-fread("/usr/203b-data/mimic-iv/core/admissions.csv.gz", header=TRUE)
+a<-now()
+ad3<-fread("/usr/203b-data/mimic-iv/core/admissions.csv.gz", header=TRUE)
+b<-now()
+b-a
 ```
+
+There is a large speed difference between read.csv (45.79s) and read_csv (6.29s). There is a smaller speed difference between read_csv and fread (1.88s).
+
+The exact timing will vary based on the environment in which these are ran and resource utilization at the time.
 
 ## Q3. ICU stays
 

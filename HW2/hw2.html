@@ -436,8 +436,8 @@ library(tidyverse)</code></pre>
 <pre class="r"><code>os &lt;- sessionInfo()$running
 if (str_detect(os, &quot;Linux&quot;)) {
   mimic_path &lt;- &quot;/usr/203b-data/mimic-iv&quot;
-} else if (str_detect(os, &quot;macOS&quot;)) {
-  mimic_path &lt;- &quot;/Users/huazhou/Documents/Box Sync/MIMIC/mimic-iv-0.4&quot;
+} else if (str_detect(os, &quot;Windows&quot;)) {
+  mimic_path &lt;- &quot;C:/Users/dsheh/OneDrive - UCLA IT Services/RProjects/203B/datasets&quot;
 }</code></pre>
 <p>Use tidyverse (ggpot2, dplyr) to explore the <a href="https://mimic-iv.mit.edu">MIMIC-IV</a> data introduced in <a href="https://ucla-biostat203b-2021winter.github.io/hw/hw1/hw1.html">homework 1</a>.</p>
 <pre class="r"><code>system(str_c(&quot;tree -s -L 2 &quot;, shQuote(mimic_path)), intern = TRUE)</code></pre>
@@ -486,6 +486,43 @@ if (str_detect(os, &quot;Linux&quot;)) {
 <h2>Q2. <code>read.csv</code> (base R) vs <code>read_csv</code> (tidyverse) vs <code>fread</code> (data.table)</h2>
 <p>There are quite a few utilities in R for reading data files. Let us test the speed of reading a moderate sized compressed csv file, <code>admissions.csv.gz</code>, by three programs: <code>read.csv</code> in base R, <code>read_csv</code> in tidyverse, and <code>fread</code> in the popular data.table package. Is there any speed difference?</p>
 <p>In this homework, we stick to the tidyverse.</p>
+<p><strong>Solution:</strong></p>
+<pre class="r"><code>a&lt;-now()</code></pre>
+<pre><code>## Warning in system(&quot;timedatectl&quot;, intern = TRUE): running command &#39;timedatectl&#39;
+## had status 1</code></pre>
+<pre class="r"><code>ad1&lt;-read.csv(&quot;/usr/203b-data/mimic-iv/core/admissions.csv.gz&quot;, header=TRUE)
+b&lt;-now()
+b-a</code></pre>
+<pre><code>## Time difference of 45.79098 secs</code></pre>
+<pre class="r"><code>a&lt;-now()
+ad2&lt;-read_csv(&quot;/usr/203b-data/mimic-iv/core/admissions.csv.gz&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   subject_id = col_double(),
+##   hadm_id = col_double(),
+##   admittime = col_datetime(format = &quot;&quot;),
+##   dischtime = col_datetime(format = &quot;&quot;),
+##   deathtime = col_datetime(format = &quot;&quot;),
+##   admission_type = col_character(),
+##   admission_location = col_character(),
+##   discharge_location = col_character(),
+##   insurance = col_character(),
+##   language = col_character(),
+##   marital_status = col_character(),
+##   ethnicity = col_character(),
+##   edregtime = col_datetime(format = &quot;&quot;),
+##   edouttime = col_datetime(format = &quot;&quot;),
+##   hospital_expire_flag = col_double()
+## )</code></pre>
+<pre class="r"><code>b&lt;-now()
+b-a</code></pre>
+<pre><code>## Time difference of 6.287057 secs</code></pre>
+<pre class="r"><code>a&lt;-now()
+ad3&lt;-fread(&quot;/usr/203b-data/mimic-iv/core/admissions.csv.gz&quot;, header=TRUE)
+b&lt;-now()
+b-a</code></pre>
+<pre><code>## Time difference of 1.884392 secs</code></pre>
 </div>
 <div id="q3.-icu-stays" class="section level2">
 <h2>Q3. ICU stays</h2>
@@ -501,6 +538,34 @@ if (str_detect(os, &quot;Linux&quot;)) {
 </li>
 <li>last ICU unit</li>
 </ul>
+<p><strong>Solution:</strong></p>
+<pre class="r"><code>read_csv(&quot;/usr/203b-data/mimic-iv/icu/icustays.csv.gz&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   subject_id = col_double(),
+##   hadm_id = col_double(),
+##   stay_id = col_double(),
+##   first_careunit = col_character(),
+##   last_careunit = col_character(),
+##   intime = col_datetime(format = &quot;&quot;),
+##   outtime = col_datetime(format = &quot;&quot;),
+##   los = col_double()
+## )</code></pre>
+<pre><code>## # A tibble: 69,619 x 8
+##    subject_id hadm_id stay_id first_careunit last_careunit intime             
+##         &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;         &lt;dttm&gt;             
+##  1   17823467  2.76e7  3.60e7 Coronary Care… Coronary Car… 2138-05-09 05:08:00
+##  2   15772648  2.61e7  3.96e7 Trauma SICU (… Trauma SICU … 2146-06-18 18:35:00
+##  3   13713711  2.58e7  3.64e7 Trauma SICU (… Trauma SICU … 2157-09-15 15:30:00
+##  4   13173210  2.23e7  3.82e7 Coronary Care… Coronary Car… 2178-02-12 17:13:50
+##  5   10213765  2.85e7  3.98e7 Trauma SICU (… Trauma SICU … 2113-04-10 14:11:00
+##  6   17530304  2.18e7  3.58e7 Trauma SICU (… Trauma SICU … 2129-03-21 07:09:00
+##  7   10297774  2.04e7  3.78e7 Coronary Care… Coronary Car… 2194-05-10 21:35:40
+##  8   16766597  2.12e7  3.93e7 Trauma SICU (… Trauma SICU … 2115-07-11 23:15:59
+##  9   17684317  2.87e7  3.70e7 Trauma SICU (… Trauma SICU … 2148-04-14 22:03:00
+## 10   15693895  2.12e7  3.48e7 Surgical Inte… Surgical Int… 2147-06-02 23:31:46
+## # … with 69,609 more rows, and 2 more variables: outtime &lt;dttm&gt;, los &lt;dbl&gt;</code></pre>
 </div>
 <div id="q4.-admission-data" class="section level2">
 <h2>Q4. <code>admission</code> data</h2>
