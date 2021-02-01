@@ -169,8 +169,52 @@ ggplot(admit_table,aes(wday(admittime, label = TRUE, abbr = TRUE))) + geom_bar()
 ```
 Deaths in Each Year
 ```{r}
-ggplot(admit_table,aes(hour(admittime))) + geom_bar() 
+admit_table %>% drop_na(deathtime) %>% ggplot(aes(year(deathtime))) + geom_bar() 
 ```
+Admission Type
+```{r}
+ggplot(admit_table,aes(admission_type)) + geom_bar() + 
+theme(axis.text.x=element_text(angle=90))
+```
+Number of Admissions per Patient
+```{r}
+ggplot(admit_table,aes(subject_id)) + geom_bar()
+```
+Admission Location
+```{r}
+ggplot(admit_table,aes(admission_location)) + geom_bar() +
+theme(axis.text.x=element_text(angle=90))
+```
+Discharge Location  
+```{r}
+ggplot(admit_table,aes(discharge_location)) + geom_bar() +
+theme(axis.text.x=element_text(angle=90))
+```
+Insurance
+```{r}
+distinct(admit_table, subject_id, .keep_all = TRUE) %>% ggplot(aes(insurance)) +
+geom_bar()
+```
+Language  
+``` {r}
+distinct(admit_table, subject_id, .keep_all = TRUE) %>% ggplot(aes(language)) +
+geom_bar()
+```
+Martial status  
+```{r}
+distinct(admit_table, subject_id, .keep_all = TRUE) %>% 
+ggplot(aes(marital_status)) + geom_bar()
+```
+Ethnicity  
+```{r}
+distinct(admit_table, subject_id, .keep_all = TRUE) %>% 
+ggplot(aes(ethnicity)) + geom_bar() + theme(axis.text.x=element_text(angle=90))
+```
+Death 
+```{r}
+
+```
+
 ## Q5. `patient` data
 
 Explore `patients.csv.gz` (<https://mimic-iv.mit.edu/docs/datasets/core/patients/>) and summarize following variables using appropriate numerics and graphs:  
@@ -196,7 +240,7 @@ min(anchor_age), Q1=quantile(anchor_age, 0.25), Median=quantile(anchor_age, 0.5)
 ggplot(pat_table,aes(anchor_age)) + geom_histogram()
 ```
 
-There is a large amount of patients with an anchor_age of zero, this doesn't make sense, so this probably means those anchor_ages are missing, but we should verify. Otherwise, there appears to be a sinusoidal pattern, but overall decreasing pattern to the data.
+There is a large amount of patients with an anchor_age of zero, this doesn't make sense, so this probably means those anchor_ages are missing, but we should verify. Otherwise, there appears to be a sinusoidal, but overall decreasing pattern to the data.
 
 
 ## Q6. Lab results
@@ -208,11 +252,13 @@ We are interested in the lab measurements of creatinine, potassium, sodium, chlo
 **Solution:**
 ```{r}
 labitems <- read_csv('/usr/203b-data/mimic-iv/hosp/d_labitems.csv.gz')
-labevent <- read_csv('/usr/203b-data/mimic-iv/hosp/labevents.csv.gz')
+```
+```{r}
+#labevent <- read_csv('/usr/203b-data/mimic-iv/hosp/labevents.csv.gz')
 ```
 
 ```{r}
-filter(labitems, )
+#filter()
 ```
 
 ## Q7. Vitals from chartered events
