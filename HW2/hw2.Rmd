@@ -1,8 +1,10 @@
 ---
 title: "Biostat 203B Homework 2"
-author: Dominic Shehtanian
+author: "Dominic Shehtanian"
 subtitle: Due Feb 5 @ 11:59PM
-output: html_document
+output:
+  html_document: default
+  word_document: default
 ---
 
 Display machine information for reproducibility:
@@ -15,6 +17,13 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 library(tidyverse)
 library(data.table)
 library(lubridate)
+
+os <- sessionInfo()$running
+if (str_detect(os, "Linux")) {
+  mimic_path <- "/usr/203b-data/mimic-iv"
+} else if (str_detect(os, "Windows")) {
+  mimic_path <- "C:/Users/dsheh/Desktop/mimic-iv"
+}
 ```
 
 ## Q1. PhysioNet credential
@@ -38,28 +47,29 @@ In this homework, we stick to the tidyverse.
 I stored the admissions data so that is does not create a massive output in the knitted document.
 ```{r}
 
-system.time(read.csv("/usr/203b-data/mimic-iv/core/admissions.csv.gz", 
+system.time(read.csv(str_c(mimic_path, "/core/admissions.csv.gz"), 
   header=TRUE))
 
 ```
 
 ```{r}
 
-system.time(read_csv("/usr/203b-data/mimic-iv/core/admissions.csv.gz"))
+system.time(read_csv(str_c(mimic_path, "/core/admissions.csv.gz")))
 
 
 ```
 
 ```{r}
 
-system.time(fread("/usr/203b-data/mimic-iv/core/admissions.csv.gz", 
+system.time(fread(str_c(mimic_path, "/core/admissions.csv.gz"), 
   header=TRUE))
 
 ```
 
-There is a large speed difference between read.csv (45.79s) and read_csv (6.29s). There is a smaller speed difference between read_csv and fread (1.88s). fread is the fastest, followed by read_csv and finally read.csv.
+There is a large speed difference between read.csv (8.73s) and read_csv (2.67s). There is a smaller speed difference between read_csv and fread (1.33s). fread is the fastest, followed by read_csv and finally read.csv.
 
 The exact timing will vary based on the environment in which these are ran and resource utilization at the time.
+These timing are from running on my Windows laptop.
 
 ## Q3. ICU stays
 
@@ -74,7 +84,7 @@ The exact timing will vary based on the environment in which these are ran and r
 **Solution:**
 
 ```{r}
-icu_table<-read_csv("/usr/203b-data/mimic-iv/icu/icustays.csv.gz")
+icu_table<-read_csv(str_c(mimic_path, "/icu/icustays.csv.gz"))
 ```
 Number of unique stay_id:
 ```{r}
@@ -92,24 +102,29 @@ icu_table %>% summarise(Avg=mean(los), StDev=sd(los), Min=min(los), Q1=quantile
 ggplot(icu_table,aes(los)) + geom_histogram(fill="steelblue") + 
   labs(x="Length of Stay")
 
+ggplot(icu_table,aes(log(los))) + geom_histogram(fill="steelblue") + 
+  labs(x="Natural Log of Length of Stay")
+
 ```
 
 First ICU unit
 ```{r}
-icu_table %>% group_by(first_careunit) %>% summarise(N=n())
+icu_table %>% group_by(first_careunit) %>% summarise(N = n())
 
-ggplot(icu_table,aes(first_careunit)) + geom_bar(fill="steelblue") +  
-  theme(axis.text.x=element_text(angle=90))
+ggplot(icu_table,aes(first_careunit)) + 
+  geom_bar(mapping = aes(fill = first_careunit)) + 
+  theme(axis.text.x = element_text(angle = 90)) + labs(x = "First ICU Unit")
 ```
 
 
 Last ICU unit
 ```{r}
-icu_table %>% group_by(last_careunit) %>% summarise(N=n())
+icu_table %>% group_by(last_careunit) %>% summarise(N = n())
 
-ggplot(icu_table,aes(last_careunit))+ geom_bar(fill="steelblue") +  
-  theme(axis.text.x=element_text(angle=90))
-```
+ggplot(icu_table,aes(last_careunit))+ 
+  geom_bar(mapping = aes(fill = last_careunit)) +  
+  theme(axis.text.x = element_text(angle = 90)) + labs(x = "Last ICU Unit")
+``` 
 
 ## Q4. `admission` data
 
@@ -136,12 +151,12 @@ Note it is possible that one patient (uniquely identified by the `SUBJECT_ID`) i
 **Solution:**
 **Still Need to Explain Patterns**
 ```{r}
-admit_table <- read_csv("/usr/203b-data/mimic-iv/core/admissions.csv.gz")
+admit_table <- read_csv(str_c(mimic_path, "/core/admissions.csv.gz"))
 ```
 Admission Year
 ```{r}
-ggplot(admit_table,aes(year(admittime))) + geom_bar(fill="steelblue") +
-theme_classic()
+ggplot(admit_table,aes(year(admittime))) + geom_bar(fill = "steelblue") + 
+  theme_minimal() + labs(x = "Number of Admissions by Year")
 ```
 
 It appears that admission start our rising before flattening out by ~2130 and then starting a large decline around ~2190.
@@ -149,22 +164,25 @@ It appears that admission start our rising before flattening out by ~2130 and th
 Admission Month
 ```{r}
 ggplot(admit_table,aes(month(admittime, label = TRUE, abbr = FALSE))) + 
-geom_bar(fill="steelblue") + theme(axis.text.x=element_text(angle=90))
+  geom_bar(fill = "steelblue") + theme(axis.text.x = element_text(angle = 90)) +
+  labs(x = "Number of Admissions by Month")
 ```
 
-There are slight differences in number of admissions by month, but overall it looks close to uniformly distributed.
+There are slight differences in number of admissions by month, but overall it looks close to uniformly distributed. Parts of the difference could be due to the different amount of days per month.
 
 Admission Month Day
 ```{r}
-ggplot(admit_table,aes(mday(admittime))) + geom_bar(fill="steelblue") 
+ggplot(admit_table,aes(mday(admittime))) + geom_bar(fill = "steelblue") +
+  labs(x = "Number of Admissions by Day of the Month")
 ```
 
 Most days of the month have approximately equal admissions, but admissions on the 29th, 30th, and 31st are lower. This is probably due to not all months having those days.
 
 Admission Week Day
 ```{r}
-ggplot(admit_table,aes(wday(admittime, label = TRUE, abbr = TRUE))) + geom_bar(
-fill="steelblue")
+ggplot(admit_table,aes(wday(admittime, label = TRUE, abbr = TRUE))) + 
+  geom_bar(fill = "steelblue") + 
+  labs(x = "Number of Admissions by Day of the Week")
 ```
 
 Admissions by day of the week appear to be roughly uniformly distributed. 
@@ -172,40 +190,47 @@ Admissions by day of the week appear to be roughly uniformly distributed.
 Deaths in Each Year
 ```{r}
 admit_table %>% drop_na(deathtime) %>% ggplot(aes(year(deathtime))) + geom_bar(
-fill="steelblue") 
+fill = "steelblue") + labs(x = "Number of Deaths per Year") 
 ```
 
-The number of deaths in each year appears to be distributed similarly to the number of admission in each year, though the number of deaths is much smaller than the number of admissions.
+The number of deaths in each year appears to be distributed similarly to the number of admission in each year, though the number of deaths is much smaller than the number of admissions. Deaths slowly increase until approximately 2140, then remain steady until declining significantly around 2190.
 
 Admission Type
 ```{r}
-ggplot(admit_table,aes(admission_type)) + geom_bar(fill="steelblue") + 
-theme(axis.text.x=element_text(angle=90))
+ggplot(admit_table,aes(admission_type)) + 
+  geom_bar(mapping = aes(fill = admission_type)) + 
+  theme(axis.text.x = element_text(angle=90)) + labs(x = "Type of Admission")
 ```
 
 The most admissions appear to occur in EW EMER. EU OBSERVATION and ELECTIVE are the next most common admissions, followed by OBSERVATION ADMIT, URGENT, SURGICAL SAME DAY, DIRECT EMER., DIRECT OBSERVATION, and then AMBULATORY OBSERVATION.
 
 Number of Admissions per Patient 
 ```{r}
-num_admit <- admit_table %>% group_by(subject_id) %>% summarise(N=n())
-ggplot(num_admit, aes(N)) + geom_bar(fill="steelblue") + 
-labs(x="Number of Visits", y="Number of Patients")
+num_admit <- admit_table %>% group_by(subject_id) %>% summarise(N = n())
+num_admit %>% summarise(Min = min(N), Max = max(N), Median = median(N), 
+                        Mean = mean(N))
+
+ggplot(num_admit, aes(N)) + geom_bar(fill = "steelblue") + 
+  labs(x = "Number of Visits", y = "Number of Patients")
+
 ```
 
 The largest amount of subjects had one admission. As the number of admissions increases, the number of patients who have been admitted that many times appears to decrease exponentially.
 
 Admission Location
 ```{r}
-ggplot(admit_table,aes(admission_location)) + geom_bar(fill="steelblue") +
-theme(axis.text.x=element_text(angle=90))
+ggplot(admit_table,aes(admission_location)) + 
+  geom_bar(mapping = aes(fill = admission_location)) + 
+  theme(axis.text.x = element_text(angle = 90)) + labs(x = "Admission Location")
 ```
 
 Emergency room and physician referral appears to be much more common admission locations than other locations.
 
 Discharge Location  
 ```{r}
-ggplot(admit_table,aes(discharge_location)) + geom_bar(fill="steelblue") +
-theme(axis.text.x=element_text(angle=90))
+ggplot(admit_table,aes(discharge_location)) + 
+  geom_bar(mapping = aes(fill = discharge_location)) +
+  theme(axis.text.x = element_text(angle = 90)) + labs(x = "Discharge Location")
 ```
 
 Most patients were discharged to home, although there is a large amount of "N/A" observations.
@@ -213,24 +238,25 @@ Most patients were discharged to home, although there is a large amount of "N/A"
 Insurance
 ```{r}
 distinct(admit_table, subject_id, .keep_all = TRUE) %>% ggplot(aes(insurance)) +
-geom_bar(fill="steelblue")
+  geom_bar(fill="steelblue") + labs(x = "Insurance Type")
 ```
 
-Most patients health insurance is "Other", followed by "Medicare" and then "Medicaid". Each patient was only counted once so certain insurance types weren't over counted. 
+Most patients health insurance is "Other", followed by "Medicare" and then "Medicaid". I chose to analyze distinct patients because I didn't want some types of insurance to be over counted due to some patients visiting many times. 
 
 Language  
 ``` {r}
 distinct(admit_table, subject_id, .keep_all = TRUE) %>% ggplot(aes(language)) +
-geom_bar(fill="steelblue")
+geom_bar(fill = "steelblue") + labs(x = "Language")
 ```
 
-The vast majority of patients' language was English. Other languages were catergorized as "?". Each patient was only counted once so languages weren't over counted. 
+The vast majority of patients' language was English. Other languages were catergorized as "?". I chose to analyze distinct patients because I didn't want some languages to be over counted due to some patients visiting many times.
 
 
 Martial status  
 ```{r}
 distinct(admit_table, subject_id, .keep_all = TRUE) %>% 
-ggplot(aes(marital_status)) + geom_bar(fill="steelblue")
+ggplot(aes(marital_status)) + geom_bar(fill = "steelblue") +
+  labs(x = "Marital Status")
 ```
 
 Married and single are the largest groups, but there is a large group with N/A for marital status. Each patient was only counted once so certain marital statuses weren't over counted. 
@@ -242,11 +268,13 @@ ggplot(aes(ethnicity)) + geom_bar(fill="steelblue") +
 theme(axis.text.x=element_text(angle=90))
 ```
 
-The majority of patients in this data set are white. Each patient was only counted once so certain ethnic groups weren't over counted.
+The majority of patients in this data set are white. I chose to analyze distinct patients because I didn't want some ethnicities to be over counted due to different rates of health care use.
 
-Death (use the hospital_expire_flag variable)
+Death (Need to change x axis info)
 ```{r}
-admit_table %>% filter(hospital_expire_flag==0 & deathtime!=NA)
+admit_table %>% ggplot(aes(hospital_expire_flag)) + 
+  geom_bar(fill = "steelblue") + labs(x = "Number of Deaths")
+
 ```
 
 ## Q5. `patient` data
@@ -257,13 +285,13 @@ Explore `patients.csv.gz` (<https://mimic-iv.mit.edu/docs/datasets/core/patients
 - `anchor_age` (explain pattern you see)
 **Solution:**
 ```{r}
-pat_table <- read_csv("/usr/203b-data/mimic-iv/core/patients.csv.gz")
+pat_table <- read_csv(str_c(mimic_path, "/core/patients.csv.gz"))
 ```
 
 Gender
 ```{r}
 pat_table %>% group_by(gender) %>% summarise(N=n())
-ggplot(pat_table,aes(gender)) + geom_bar(fill="steelblue")
+ggplot(pat_table,aes(gender)) + geom_bar(fill="steelblue") + labs(x="Gender")
 ```
 Anchor Age
 ```{r}
@@ -271,7 +299,8 @@ pat_table %>% summarise(Avg=mean(anchor_age), StDev=sd(anchor_age), Min=
 min(anchor_age), Q1=quantile(anchor_age, 0.25), Median=quantile(anchor_age, 0.5)
 , Q3=quantile(anchor_age, 0.75), Max=max(anchor_age))
 
-ggplot(pat_table,aes(anchor_age)) + geom_histogram(fill="steelblue")
+ggplot(pat_table,aes(anchor_age)) + geom_histogram(fill="steelblue") + 
+  labs(x="Anchor Age")
 ```
 
 There is a large amount of patients with an anchor_age of zero, this doesn't make sense, so this probably means those anchor_ages are missing, but we should verify. Otherwise, there appears to be a sinusoidal, but overall decreasing pattern to the data.
@@ -285,14 +314,21 @@ We are interested in the lab measurements of creatinine, potassium, sodium, chlo
 
 **Solution:**
 ```{r}
-labitems <- read_csv('/usr/203b-data/mimic-iv/hosp/d_labitems.csv.gz')
+dlabitems <- read_csv(str_c(mimic_path, "/hosp/d_labitems.csv.gz"))
 ```
 ```{r}
-#labevent <- fread('/usr/203b-data/mimic-iv/hosp/labevents.csv.gz', header = TRUE)
+system.time(labevent <- fread(str_c(mimic_path, "/hosp/labevents.csv.gz"), 
+                              select = c("subject_id", "hadm_id", "itemid",
+                                         "charttime", "valuenum"), nThread = 8))
 ```
 
 ```{r}
-#filter()
+semi_join(icu_table, as.tibble(labevent), by = c("subject_id", "hadm_id")) %>%
+  fwrite("labevents_icustays.csv.gz", nThread = 8)
+```
+
+```{r}
+system.time(labevents_tble <- fread("labevents_icustays.csv.gz", nThread = 6))
 ```
 
 ## Q7. Vitals from chartered events
