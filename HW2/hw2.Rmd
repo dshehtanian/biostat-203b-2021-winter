@@ -310,26 +310,50 @@ There is a large amount of patients with an anchor_age of zero, this doesn't mak
 
 `labevents.csv.gz` (<https://mimic-iv.mit.edu/docs/datasets/hosp/labevents/>) contains all laboratory measurements for patients. 
 
-We are interested in the lab measurements of creatinine, potassium, sodium, chloride, bicarbonate, hematocrit, white blood cell count, glucose, magnesium, calcium, phosphorus, and lactate. Find the `itemid`s of these lab measurements from `d_labitems.csv.gz` and retrieve a subset of `labevents.csv.gz` only containing these items.
+We are interested in the lab measurements of creatinine (50912), potassium (50971), sodium (50983), chloride (50902), bicarbonate (50882), hematocrit (51221), white blood cell count (51301), glucose (50931), magnesium (50960), calcium (50893), and lactate (50813). Find the `itemid`s of these lab measurements from `d_labitems.csv.gz` and retrieve a subset of `labevents.csv.gz` only containing these items.
 
 **Solution:**
 ```{r}
 dlabitems <- read_csv(str_c(mimic_path, "/hosp/d_labitems.csv.gz"))
 ```
-```{r}
-system.time(labevent <- fread(str_c(mimic_path, "/hosp/labevents.csv.gz"), 
+```{r, eval=FALSE}
+system.time(labevents <- fread(str_c(mimic_path, "/hosp/labevents.csv.gz"), 
                               select = c("subject_id", "hadm_id", "itemid",
                                          "charttime", "valuenum"), nThread = 8))
 ```
-
 ```{r}
-semi_join(icu_table, as.tibble(labevent), by = c("subject_id", "hadm_id")) %>%
-  fwrite("labevents_icustays.csv.gz", nThread = 8)
+labevents_tble <- as_tibble(labevents)
+```
+```{r}
+labevents_tble %>% semi_join(icu_table, by = c("subject_id", "hadm_id")) %>%
+  fwrite("labevents_icustays.csv.gz")
+```
+```{r}
+system.time(lab_icu <- read_csv("labevents_icustays.csv.gz"))
 ```
 
 ```{r}
-system.time(labevents_tble <- fread("labevents_icustays.csv.gz", nThread = 6))
+labitems <- c("creatinine", "potassium", "sodium", "chloride", "bicarbonate", 
+             "hematocrit", "white blood cell", "glucose", "magnesium", 
+             "calcium", "lactate")
+itemids <- rep(0, length(labitems))
+i <- 1
+for (labitem in labitems) {
+  print(str_interp("Search for ${labitem}"))
+  itemid_list <- dlabitems %>% filter(str_detect(label, 
+                                      regex(labitem, ignore_case = TRUE))) %>%
+    .$itemid
+  itemid <- lab_icu %>% filter(itemid %in% itemid_list) %>% 
+    count(itemid) %>% arrange(desc(n)) %>% slice(1) %>% .$itemid
+  itemids[i] <- itemid
+  i <- i + 1
+}
 ```
+```{r}
+labitem_list <- tibble(labitem=labitems, itemid=itemids)
+labitem_list
+```
+
 
 ## Q7. Vitals from chartered events
 
