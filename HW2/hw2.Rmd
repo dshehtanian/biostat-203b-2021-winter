@@ -149,7 +149,7 @@ Information of the patients admitted into hospital is available in `ADMISSION.cs
 Note it is possible that one patient (uniquely identified by the `SUBJECT_ID`) is admitted into hospital multiple times. When summarizing some demographic information, it makes sense to summarize based on unique patients. 
 
 **Solution:**
-**Still Need to Explain Patterns**
+
 ```{r}
 admit_table <- read_csv(str_c(mimic_path, "/core/admissions.csv.gz"))
 ```
@@ -159,7 +159,7 @@ ggplot(admit_table,aes(year(admittime))) + geom_bar(fill = "steelblue") +
   theme_minimal() + labs(x = "Number of Admissions by Year")
 ```
 
-It appears that admission start our rising before flattening out by ~2130 and then starting a large decline around ~2190.
+It appears that admission start our rising before flattening out by ~2130 and then starting a large decline around ~2190.I did not restrict my analysis to unique patients because I wanted to see all admissions that occurred each year.
 
 Admission Month
 ```{r}
@@ -168,7 +168,7 @@ ggplot(admit_table,aes(month(admittime, label = TRUE, abbr = FALSE))) +
   labs(x = "Number of Admissions by Month")
 ```
 
-There are slight differences in number of admissions by month, but overall it looks close to uniformly distributed. Parts of the difference could be due to the different amount of days per month.
+There are slight differences in number of admissions by month, but overall it looks close to uniformly distributed. Parts of the difference could be due to the different amount of days per month. I did not restrict my analysis to unique patients because I wanted to see all admissions that occurred each month.
 
 Admission Month Day
 ```{r}
@@ -176,7 +176,7 @@ ggplot(admit_table,aes(mday(admittime))) + geom_bar(fill = "steelblue") +
   labs(x = "Number of Admissions by Day of the Month")
 ```
 
-Most days of the month have approximately equal admissions, but admissions on the 29th, 30th, and 31st are lower. This is probably due to not all months having those days.
+Most days of the month have approximately equal admissions, but admissions on the 29th, 30th, and 31st are lower. This is probably due to not all months having those days. I did not restrict my analysis to unique patients because I wanted to see all admissions that occurred each day of the month.
 
 Admission Week Day
 ```{r}
@@ -185,7 +185,7 @@ ggplot(admit_table,aes(wday(admittime, label = TRUE, abbr = TRUE))) +
   labs(x = "Number of Admissions by Day of the Week")
 ```
 
-Admissions by day of the week appear to be roughly uniformly distributed. 
+Admissions by day of the week appear to be roughly uniformly distributed. I did not restrict my analysis to unique patients because I wanted to see all admissions that occurred each day of the week.
 
 Deaths in Each Year
 ```{r}
@@ -193,7 +193,7 @@ admit_table %>% drop_na(deathtime) %>% ggplot(aes(year(deathtime))) + geom_bar(
 fill = "steelblue") + labs(x = "Number of Deaths per Year") 
 ```
 
-The number of deaths in each year appears to be distributed similarly to the number of admission in each year, though the number of deaths is much smaller than the number of admissions. Deaths slowly increase until approximately 2140, then remain steady until declining significantly around 2190.
+The number of deaths in each year appears to be distributed similarly to the number of admission in each year, though the number of deaths is much smaller than the number of admissions. Deaths slowly increase until approximately 2140, then remain steady overall, but with some years having large drops until declining significantly around 2190. I did not restrict my analysis to unique patients because I wanted to see the total amount of deaths each year.
 
 Admission Type
 ```{r}
@@ -202,20 +202,20 @@ ggplot(admit_table,aes(admission_type)) +
   theme(axis.text.x = element_text(angle=90)) + labs(x = "Type of Admission")
 ```
 
-The most admissions appear to occur in EW EMER. EU OBSERVATION and ELECTIVE are the next most common admissions, followed by OBSERVATION ADMIT, URGENT, SURGICAL SAME DAY, DIRECT EMER., DIRECT OBSERVATION, and then AMBULATORY OBSERVATION.
+The most admissions appear to occur in EW EMER. EU OBSERVATION and ELECTIVE are the next most common admissions, followed by OBSERVATION ADMIT, URGENT, SURGICAL SAME DAY, DIRECT EMER., DIRECT OBSERVATION, and then AMBULATORY OBSERVATION. I did not choose to analyze this by unique patients, because patients could have multiple different admissions of different types and I wanted to show which admission types were the most common for the hospital.
 
 Number of Admissions per Patient 
 ```{r}
 num_admit <- admit_table %>% group_by(subject_id) %>% summarise(N = n())
 num_admit %>% summarise(Min = min(N), Max = max(N), Median = median(N), 
-                        Mean = mean(N))
+                        Mean = mean(N), N = n())
 
 ggplot(num_admit, aes(N)) + geom_bar(fill = "steelblue") + 
   labs(x = "Number of Visits", y = "Number of Patients")
 
 ```
 
-The largest amount of subjects had one admission. As the number of admissions increases, the number of patients who have been admitted that many times appears to decrease exponentially.
+The largest amount of subjects had one admission. As the number of admissions increases, the number of patients who have been admitted that many times appears to decrease exponentially. I conducted this analysis for unique patients because we are analyzing the number of visits by each unique patient.
 
 Admission Location
 ```{r}
@@ -224,7 +224,7 @@ ggplot(admit_table,aes(admission_location)) +
   theme(axis.text.x = element_text(angle = 90)) + labs(x = "Admission Location")
 ```
 
-Emergency room and physician referral appears to be much more common admission locations than other locations.
+Emergency room and physician referral appears to be much more common admission locations than other locations. I did not choose to analyze by unique patient because I wanted to show which locations have the most admissions.
 
 Discharge Location  
 ```{r}
@@ -233,12 +233,12 @@ ggplot(admit_table,aes(discharge_location)) +
   theme(axis.text.x = element_text(angle = 90)) + labs(x = "Discharge Location")
 ```
 
-Most patients were discharged to home, although there is a large amount of "N/A" observations.
+Most patients were discharged to home, although there is a large amount of "N/A" observations. I did not choose to analyze by unique patient because I wanted to show the outcomes (discharge location) for each admission.
 
 Insurance
 ```{r}
 distinct(admit_table, subject_id, .keep_all = TRUE) %>% ggplot(aes(insurance)) +
-  geom_bar(fill="steelblue") + labs(x = "Insurance Type")
+  geom_bar(fill = "steelblue") + labs(x = "Insurance Type")
 ```
 
 Most patients health insurance is "Other", followed by "Medicare" and then "Medicaid". I chose to analyze distinct patients because I didn't want some types of insurance to be over counted due to some patients visiting many times. 
@@ -256,7 +256,7 @@ Martial status
 ```{r}
 distinct(admit_table, subject_id, .keep_all = TRUE) %>% 
 ggplot(aes(marital_status)) + geom_bar(fill = "steelblue") +
-  labs(x = "Marital Status")
+  labs(x = "Marital Status") 
 ```
 
 Married and single are the largest groups, but there is a large group with N/A for marital status. Each patient was only counted once so certain marital statuses weren't over counted. 
@@ -268,14 +268,18 @@ ggplot(aes(ethnicity)) + geom_bar(fill="steelblue") +
 theme(axis.text.x=element_text(angle=90))
 ```
 
-The majority of patients in this data set are white. I chose to analyze distinct patients because I didn't want some ethnicities to be over counted due to different rates of health care use.
+The majority of patients in this data set are white. I chose to analyze distinct patients because I didn't want some ethnic groups to be over counted due to different rates of health care use.
 
 Death (Need to change x axis info)
 ```{r}
-admit_table %>% ggplot(aes(hospital_expire_flag)) + 
-  geom_bar(fill = "steelblue") + labs(x = "Number of Deaths")
+admit_table$deathflag = "No"
+admit_table[admit_table$hospital_expire_flag == 1, 16] = "Yes"
+admit_table %>% ggplot(aes(deathflag)) + 
+  geom_bar(fill = "steelblue") + labs(x = "Number of Deaths") 
 
 ```
+
+The vast majority of hospital admissions do not have a death occur. I did not choose to analyze this by distinct patients because it a patient could be admitted multiple times but only can die once and it is more important to understand how many hospital admissions have a death occur, instead of how many unique admitted patients died.
 
 ## Q5. `patient` data
 
@@ -316,7 +320,7 @@ We are interested in the lab measurements of creatinine (50912), potassium (5097
 ```{r}
 dlabitems <- read_csv(str_c(mimic_path, "/hosp/d_labitems.csv.gz"))
 ```
-```{r, eval=FALSE}
+```{r}
 system.time(labevents <- fread(str_c(mimic_path, "/hosp/labevents.csv.gz"), 
                               select = c("subject_id", "hadm_id", "itemid",
                                          "charttime", "valuenum"), nThread = 8))
@@ -354,21 +358,36 @@ labitem_list <- tibble(labitem=labitems, itemid=itemids)
 labitem_list
 ```
 
+```{r}
+labevent_subset <- filter(lab_icu, itemid %in% itemids)
+labevent_subset
+```
 
 ## Q7. Vitals from chartered events
 
-We are interested in the vitals for ICU patients: heart rate, mean and systolic blood pressure (invasive and noninvasive measurements combined), body temperature, SpO2, and respiratory rate.
+We are interested in the vitals for ICU patients: heart rate, mean and systolic blood pressure (invasive and noninvasive measurements combined), body temperature, SpO2, and respiratory rate. Find the `itemid`s of these vitals from `d_items.csv.gz` and retrieve a subset of `chartevents.csv.gz` only containing these items.
 
-`chartevents.csv.gz` (<https://mimic-iv.mit.edu/docs/datasets/icu/chartevents/>) contains all the charted data available for a patient. During their ICU stay, the primary repository of a patient’s information is their electronic chart. The `ITEMID` variable indicates a single measurement type in the database. The `VALUE` variable is the value measured for `ITEMID`. 
+`chartevents.csv.gz` (<https://mimic-iv.mit.edu/docs/datasets/icu/chartevents/>) contains all the charted data available for a patient. During their ICU stay, the primary repository of a patient’s information is their electronic chart. The `itemid` variable indicates a single measurement type in the database. The `value` variable is the value measured for `itemid`.
 
-`d_items.csv.gz` (<https://mimic-iv.mit.edu/docs/datasets/icu/d_items/>) is the dictionary for the `ITEMID` in `CHARTEVENTS.csv`. Find potential values of `ITEMID` that correspond to systolic blood pressure, i.e., `LABEL` contains the string `systolic`. 
+`d_items.csv.gz` (<https://mimic-iv.mit.edu/docs/datasets/icu/d_items/>) is the dictionary for the `itemid` in `chartevents.csv.gz`. 
 
 **Solution:**
 ```{r}
-#chart<-fread('/usr/203b-data/mimic-iv/icu/chartevents.csv.gz', header = TRUE)
+system.time(chart <- fread(str_c(mimic_path, "/icu/chartevents.csv.gz"), 
+                           select = c("hadm_id", "itemid", 
+                                      "charttime", "valuenum"), nThread = 8))
 ```
 ```{r}
-ditems<-read_csv('/usr/203b-data/mimic-iv/icu/d_items.csv.gz')
+system.time(as_tibble(chart) %>% semi_join(icu_table, by = c("hadm_id")) %>%
+  fwrite("chart_icustays.csv.gz", nThread = 8))
+```
+```{r}
+system.time(chart_icu <- fread(str_c("chart_icustays.csv.gz"), 
+            nThread=8))
+```
+```{r}
+ditems<-read_csv(str_c(mimic_path, "/icu/d_items.csv.gz"))
+#chartitems <- c(220045, 220050, 220052, )
 ```
 ## Q8. Putting things together
 
@@ -385,3 +404,12 @@ and columns contains at least following variables
 - first vitals measurement during ICU stay  
 - an indicator variable whether the patient died within 30 days of hospital admission  
 
+```{r}
+icu_table %>% group_by(subject_id) %>% slice_min(intime) %>% 
+  arrange(subject_id) %>% left_join(admit_table, by = "subject_id", 
+                                    "hadm_id") %>% left_join(pat_table, 
+                                                             by = "subject_id")
+```
+```{r}
+labevent_subset %>% group_by(subject_id) %>% slice_min(charttime)
+```
