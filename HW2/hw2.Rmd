@@ -44,7 +44,7 @@ There are quite a few utilities in R for reading data files. Let us test the spe
 In this homework, we stick to the tidyverse. 
 
 **Solution:**
-I stored the admissions data so that is does not create a massive output in the knitted document.
+
 ```{r}
 
 system.time(read.csv(str_c(mimic_path, "/core/admissions.csv.gz"), 
@@ -84,8 +84,8 @@ These timing are from running on my Windows laptop.
 **Solution:**
 
 ```{r}
-icu_table<-read_csv(str_c(mimic_path, "/icu/icustays.csv.gz"))
-icu_table
+icu_table<-read_csv(str_c(mimic_path, "/icu/icustays.csv.gz")) %>% 
+  print(width = Inf)
 ```
 Number of unique stay_id:
 ```{r}
@@ -97,14 +97,12 @@ icu_table %>% distinct(subject_id) %>% nrow()
 ```
 Length of ICU stay:
 ```{r}
-icu_table %>% summarise(Avg=mean(los), StDev=sd(los), Min=min(los), Q1=quantile
-  (los, 0.25), Median=quantile(los, 0.5), Q3=quantile(los, 0.75), Max=max(los))
+icu_table %>% summarise(Avg = mean(los), StDev = sd(los), Min = min(los), 
+                        Q1 = quantile(los, 0.25), Median = quantile(los, 0.5), 
+                        Q3 = quantile(los, 0.75), Max = max(los))
 
-ggplot(icu_table,aes(los)) + geom_histogram(fill="steelblue") + 
-  labs(x="Length of Stay")
-
-ggplot(icu_table,aes(log(los))) + geom_histogram(fill="steelblue") + 
-  labs(x="Natural Log of Length of Stay")
+ggplot(icu_table,aes(los)) + geom_histogram(fill = "steelblue") + 
+  labs(x = "Length of Stay")
 
 ```
 
@@ -122,7 +120,7 @@ Last ICU unit
 ```{r}
 icu_table %>% group_by(last_careunit) %>% summarise(N = n())
 
-ggplot(icu_table,aes(last_careunit))+ 
+ggplot(icu_table,aes(last_careunit)) + 
   geom_bar(mapping = aes(fill = last_careunit)) +  
   theme(axis.text.x = element_text(angle = 90)) + labs(x = "Last ICU Unit")
 ``` 
@@ -157,7 +155,7 @@ admit_table
 ```
 Admission Year
 ```{r}
-ggplot(admit_table,aes(year(admittime))) + geom_bar(fill = "steelblue") + 
+ggplot(admit_table, aes(year(admittime))) + geom_bar(fill = "steelblue") + 
   theme_minimal() + labs(x = "Number of Admissions by Year")
 ```
 
@@ -174,7 +172,7 @@ There are slight differences in number of admissions by month, but overall it lo
 
 Admission Month Day
 ```{r}
-ggplot(admit_table,aes(mday(admittime))) + geom_bar(fill = "steelblue") +
+ggplot(admit_table, aes(mday(admittime))) + geom_bar(fill = "steelblue") +
   labs(x = "Number of Admissions by Day of the Month")
 ```
 
@@ -182,7 +180,7 @@ Most days of the month have approximately equal admissions, but admissions on th
 
 Admission Week Day
 ```{r}
-ggplot(admit_table,aes(wday(admittime, label = TRUE, abbr = TRUE))) + 
+ggplot(admit_table, aes(wday(admittime, label = TRUE, abbr = TRUE))) + 
   geom_bar(fill = "steelblue") + 
   labs(x = "Number of Admissions by Day of the Week")
 ```
@@ -199,7 +197,7 @@ The number of deaths in each year appears to be distributed similarly to the num
 
 Admission Type
 ```{r}
-ggplot(admit_table,aes(admission_type)) + 
+ggplot(admit_table, aes(admission_type)) + 
   geom_bar(mapping = aes(fill = admission_type)) + 
   theme(axis.text.x = element_text(angle=90)) + labs(x = "Type of Admission")
 ```
@@ -221,7 +219,7 @@ The largest amount of subjects had one admission. As the number of admissions in
 
 Admission Location
 ```{r}
-ggplot(admit_table,aes(admission_location)) + 
+ggplot(admit_table, aes(admission_location)) + 
   geom_bar(mapping = aes(fill = admission_location)) + 
   theme(axis.text.x = element_text(angle = 90)) + labs(x = "Admission Location")
 ```
@@ -230,7 +228,7 @@ Emergency room and physician referral appears to be much more common admission l
 
 Discharge Location  
 ```{r}
-ggplot(admit_table,aes(discharge_location)) + 
+ggplot(admit_table, aes(discharge_location)) + 
   geom_bar(mapping = aes(fill = discharge_location)) +
   theme(axis.text.x = element_text(angle = 90)) + labs(x = "Discharge Location")
 ```
@@ -266,8 +264,8 @@ Married and single are the largest groups, but there is a large group with N/A f
 Ethnicity  
 ```{r}
 distinct(admit_table, subject_id, .keep_all = TRUE) %>% 
-ggplot(aes(ethnicity)) + geom_bar(fill="steelblue") + 
-theme(axis.text.x=element_text(angle=90))
+ggplot(aes(ethnicity)) + geom_bar(fill = "steelblue") + 
+theme(axis.text.x = element_text(angle = 90))
 ```
 
 The majority of patients in this data set are white. I chose to analyze distinct patients because I didn't want some ethnic groups to be over counted due to different rates of health care use.
@@ -297,17 +295,19 @@ pat_table
 
 Gender
 ```{r}
-pat_table %>% group_by(gender) %>% summarise(N=n())
-ggplot(pat_table,aes(gender)) + geom_bar(fill="steelblue") + labs(x="Gender")
+pat_table %>% group_by(gender) %>% summarise(N = n())
+  ggplot(pat_table,aes(gender)) + geom_bar(fill = "steelblue") + 
+  labs(x = "Gender")
 ```
 Anchor Age
 ```{r}
-pat_table %>% summarise(Avg=mean(anchor_age), StDev=sd(anchor_age), Min=
-min(anchor_age), Q1=quantile(anchor_age, 0.25), Median=quantile(anchor_age, 0.5)
-, Q3=quantile(anchor_age, 0.75), Max=max(anchor_age))
+pat_table %>% summarise(Avg = mean(anchor_age), StDev = sd(anchor_age), 
+                        Min = min(anchor_age), Q1 = quantile(anchor_age, 0.25), 
+                        Median = quantile(anchor_age, 0.5), 
+                        Q3 = quantile(anchor_age, 0.75), Max = max(anchor_age))
 
-ggplot(pat_table,aes(anchor_age)) + geom_histogram(fill="steelblue") + 
-  labs(x="Anchor Age")
+ggplot(pat_table,aes(anchor_age)) + geom_histogram(fill = "steelblue") + 
+  labs(x = "Anchor Age")
 ```
 
 There is a large amount of patients with an anchor_age of zero, this doesn't make sense, so this probably means those anchor_ages are missing, but we should verify. Otherwise, there appears to be a sinusoidal, but overall decreasing pattern to the data.
@@ -383,12 +383,12 @@ We are interested in the vitals for ICU patients: heart rate, mean and systolic 
 I set my code to not evaluate when knit because I can barely get it to run on my system and not at all on the teaching server. I have included it here for reference, but I ended up using the provided filtered data file from Dr. Zhou for this homework assignment.
 
 Reads in the dictionary for the chart events for the ICU.
-```{r, eval = F}
+```{r eval = F}
 ditems<-read_csv(str_c(mimic_path, "/icu/d_items.csv.gz")) %>% 
   print(width = Inf)
 ```
 Lists the most common chart items for each vital sign that is wanted.
-```{r, eval = F}
+```{r eval = F}
 for (chartitem in c("heartrate", "Blood Pressure mean", "systolic", 
                     "temperature", "SpO2", "respiratory rate")) {
   print(str_interp("searching for ${chartitem}"))  
@@ -397,39 +397,46 @@ for (chartitem in c("heartrate", "Blood Pressure mean", "systolic",
 }
 ```
 Reads in the chartevents file, which is very large, into R if the intermediary file doesn't exist.
-```{r, eval = F}
-if(!file.exists("labevents_icustays.csv.gz")){
+```{r eval = F}
+if(!file.exists("chart_icustays.csv.gz")){
 system.time(chart <- fread(str_c(mimic_path, "/icu/chartevents.csv.gz"), 
                            select = c("hadm_id", "itemid", 
                                       "charttime", "valuenum"), nThread = 8))
 }
 ```
 Creates a stripped down set of data and writes it to an intermediary file. This intermediary file is still over 1GB in size.
-```{r, eval = F}
+```{r eval = F}
 system.time(as_tibble(chart) %>% semi_join(icu_table, by = c("hadm_id")) %>%
   fwrite("chart_icustays.csv.gz", nThread = 8))
 ```
 Reads the intermediary file back into R.
-```{r, eval = F}
+```{r eval = F}
 system.time(chart_icu <- fread(str_c("chart_icustays.csv.gz"), 
             nThread=8))
 ```
 Outputs a subset of data that contains the most common vitals measurements of the type requested.
-```{r, eval = F}
-chartfil_tble <- filter(chart_icu, itemid=c(220179, 220181, 220045, 220210, 
-                                    223761, 220045)) %>% print(width = Inf)
+```{r eval = F}
+chartfil_tble <- filter(chart_icu, itemid=c(220045, 220050, 220052, 220179, 
+                                            220181, 220210, 223761)) %>% 
+  print(width = Inf)
 ```
 Due to performance issues. I used the below code to read in the pre-filtered data set from Dr. Zhou. 
 ```{r}
 chartfilter <- fread(str_c(mimic_path, 
   "/mimic-iv-derived-data/chartevents_filtered_itemid.csv.gz"), header = FALSE,
-  col.names = c("subject_id", "hadm_id","stayid","charttime","itemid","valuenum"
-                )) %>% print(width = Inf)
+  col.names = c("subject_id", "hadm_id","stay_id","charttime","itemid",
+                "valuenum")) %>% print()
 ```
 Converts the stripped down data to a tibble and changes the charttime variable to a data instead of a character value.
 ```{r}
 chartfilter_tble <- as_tibble(chartfilter) %>% 
   mutate(charttime=ymd_hms(charttime)) %>% print(width = Inf)
+```
+
+Removing the fread data from memory, as it is now a duplicate.
+```{r}
+rm(chartfilter)
+gc()
 ```
 
 ## Q8. Putting things together
@@ -446,6 +453,23 @@ and columns contains at least following variables
 - first lab measurements during ICU stay  
 - first vitals measurement during ICU stay  
 - an indicator variable whether the patient died within 30 days of hospital admission  
+
+This creates a tibble of the first chart event for each vital sign. We won't use this until later, but it lets us deallocate the data from Q7, which is very memory intensive.
+```{r}
+chartfilter_uniq <- chartfilter_tble %>% 
+  left_join(select(icu_table, subject_id, hadm_id, intime), by = 
+              c("subject_id", "hadm_id")) %>% filter(charttime >= intime) %>% 
+  group_by(subject_id, itemid) %>% 
+  arrange(intime, .by_group=TRUE) %>% slice_head(n = 1) %>% 
+  arrange(charttime, .by_group=TRUE) %>% slice_head(n = 1) %>% 
+  print(width = Inf)
+```
+
+Now that we have generated a smaller data set from this, we deallocate it from memory so we improve performance and don't cause issues due to lack of memory.
+```{r}
+rm(chartfilter_tble)
+gc()
+```
 
 ```{r}
 icutble_uniq <- icu_table %>% group_by(subject_id) %>% filter(rank(intime) == 1) %>%
@@ -465,13 +489,38 @@ labmerge <- labevent_subset %>% semi_join(icutble_uniq, by =
   slice_head(n=1) %>% select(-charttime, -intime) %>% 
   spread(key=itemid, value=valuenum) %>% print(width = Inf)
 ```
-
+Renaming our columns to the lab item names instead of the itemids 
 ```{r}
-labmerge %>% right_join(icutble_uniq, by = c("subject_id", "hadm_id")) %>%
+labfinal <- labmerge %>% right_join(icutble_uniq, by = c("subject_id", 
+                                                         "hadm_id")) %>%
   ungroup() %>% rename_at(vars(as.character(labitem_list$itemid)), 
                           ~labitem_list$labitem) %>% print(width = Inf)
 ```
 
+Removing more data no longer needed from memory to improve performance.
+```{r}
+rm(labmerge, lab_icu, labevent_subset, dlabitems, labitems, labitem_list, 
+   chartfilter)
+gc()
+```
 
+```{r}
+chartids = c(220045, 220050, 220052, 220179, 220181, 220210, 223761)
+chartnames = c("HeartRate", "Arterial Blood Pressure Mean", 
+               "Arterial Blood Pressure Systolic", 
+               "Non-Invasive Systolic Pressure", 
+               "Non-Invasive Blood Pressure Mean",
+               "Temperature (F)", "Respiratory Rate")
+full_tble <- labfinal %>% left_join(chartfilter_uniq, by = c("subject_id", 
+                                    "hadm_id", "intime", "stay_id")) %>% 
+  select(-charttime, -stay_id) %>% spread(key = itemid, 
+  value = valuenum) %>% rename_at(vars(as.character(chartids)), 
+                          ~chartnames) %>% print(width = Inf)
+```
 
-
+```{r}
+full_tble[!is.na(names(full_tble))] %>% mutate(days_to_death = 
+  difftime(deathtime, intime, units = "days")) %>% 
+  mutate(died_within_30d = days_to_death<=30) %>% 
+  replace_na(list(died_within_30d = FALSE)) %>% print(width = Inf)
+```
