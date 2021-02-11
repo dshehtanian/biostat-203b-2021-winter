@@ -1,7 +1,7 @@
 ---
 title: "Biostat 203B Homework 2"
 author: "Dominic Shehtanian"
-subtitle: Due Feb 5 @ 11:59PM
+subtitle: Due Feb 12 @ 11:59PM
 output:
   html_document: default
   word_document: default
@@ -85,6 +85,7 @@ These timing are from running on my Windows laptop.
 
 ```{r}
 icu_table<-read_csv(str_c(mimic_path, "/icu/icustays.csv.gz"))
+icu_table
 ```
 Number of unique stay_id:
 ```{r}
@@ -152,6 +153,7 @@ Note it is possible that one patient (uniquely identified by the `SUBJECT_ID`) i
 
 ```{r}
 admit_table <- read_csv(str_c(mimic_path, "/core/admissions.csv.gz"))
+admit_table
 ```
 Admission Year
 ```{r}
@@ -290,6 +292,7 @@ Explore `patients.csv.gz` (<https://mimic-iv.mit.edu/docs/datasets/core/patients
 **Solution:**
 ```{r}
 pat_table <- read_csv(str_c(mimic_path, "/core/patients.csv.gz"))
+pat_table
 ```
 
 Gender
@@ -317,25 +320,28 @@ There is a large amount of patients with an anchor_age of zero, this doesn't mak
 We are interested in the lab measurements of creatinine (50912), potassium (50971), sodium (50983), chloride (50902), bicarbonate (50882), hematocrit (51221), white blood cell count (51301), glucose (50931), magnesium (50960), calcium (50893), and lactate (50813). Find the `itemid`s of these lab measurements from `d_labitems.csv.gz` and retrieve a subset of `labevents.csv.gz` only containing these items.
 
 **Solution:**
+Reads in the Lab Item Dictionary.
 ```{r}
-dlabitems <- read_csv(str_c(mimic_path, "/hosp/d_labitems.csv.gz"))
+dlabitems <- read_csv(str_c(mimic_path, "/hosp/d_labitems.csv.gz")) %>%
+  print(width = Inf)
 ```
+Reads in the large labevents file, if the smaller filtered down file does not exist. Filters the file down based on ICU stays and a writes it to an intermediary file.
 ```{r}
-system.time(labevents <- fread(str_c(mimic_path, "/hosp/labevents.csv.gz"), 
+if(!file.exists("labevents_icustays.csv.gz")){
+  system.time(labevents <- fread(str_c(mimic_path, "/hosp/labevents.csv.gz"), 
                               select = c("subject_id", "hadm_id", "itemid",
                                          "charttime", "valuenum"), nThread = 8))
+  labevents_tble <- as_tibble(labevents)
+  system.time(labevents_tble %>% semi_join(icu_table, 
+  by = c("subject_id", "hadm_id")) %>% fwrite("labevents_icustays.csv.gz"))
+}
 ```
-```{r}
-labevents_tble <- as_tibble(labevents)
-```
-```{r}
-labevents_tble %>% semi_join(icu_table, by = c("subject_id", "hadm_id")) %>%
-  fwrite("labevents_icustays.csv.gz")
-```
+Reads the intermediary file back into R.
 ```{r}
 system.time(lab_icu <- read_csv("labevents_icustays.csv.gz"))
 ```
 
+Finds the most common lab items of each type and creates a list of those items.
 ```{r}
 labitems <- c("creatinine", "potassium", "sodium", "chloride", "bicarbonate", 
              "hematocrit", "white blood cell", "glucose", "magnesium", 
@@ -343,7 +349,7 @@ labitems <- c("creatinine", "potassium", "sodium", "chloride", "bicarbonate",
 itemids <- rep(0, length(labitems))
 i <- 1
 for (labitem in labitems) {
-  print(str_interp("Search for ${labitem}"))
+  print(str_interp("Searching for ${labitem}"))
   itemid_list <- dlabitems %>% filter(str_detect(label, 
                                       regex(labitem, ignore_case = TRUE))) %>%
     .$itemid
@@ -353,15 +359,17 @@ for (labitem in labitems) {
   i <- i + 1
 }
 ```
+Puts these lab items in a tibble for ease of reference and viewing. 
 ```{r}
-labitem_list <- tibble(labitem=labitems, itemid=itemids)
-labitem_list
+labitem_list <- tibble(labitem = labitems, itemid = itemids) %>% 
+  print(width = Inf)
 ```
 
+Creates a subset of only the lab items that we want for further analysis.
 ```{r}
-labevent_subset <- filter(lab_icu, itemid %in% itemids)
-labevent_subset
+labevent_subset <- filter(lab_icu, itemid %in% itemids) %>% print(width = Inf)
 ```
+
 
 ## Q7. Vitals from chartered events
 
@@ -372,23 +380,58 @@ We are interested in the vitals for ICU patients: heart rate, mean and systolic 
 `d_items.csv.gz` (<https://mimic-iv.mit.edu/docs/datasets/icu/d_items/>) is the dictionary for the `itemid` in `chartevents.csv.gz`. 
 
 **Solution:**
-```{r}
+I set my code to not evaluate when knit because I can barely get it to run on my system and not at all on the teaching server. I have included it here for reference, but I ended up using the provided filtered data file from Dr. Zhou for this homework assignment.
+
+Reads in the dictionary for the chart events for the ICU.
+```{r, eval = F}
+ditems<-read_csv(str_c(mimic_path, "/icu/d_items.csv.gz")) %>% 
+  print(width = Inf)
+```
+Lists the most common chart items for each vital sign that is wanted.
+```{r, eval = F}
+for (chartitem in c("heartrate", "Blood Pressure mean", "systolic", 
+                    "temperature", "SpO2", "respiratory rate")) {
+  print(str_interp("searching for ${chartitem}"))  
+  ditems %>% filter(str_detect(label, regex(chartitem, ignore_case = T))) %>% 
+  print(width = Inf)
+}
+```
+Reads in the chartevents file, which is very large, into R if the intermediary file doesn't exist.
+```{r, eval = F}
+if(!file.exists("labevents_icustays.csv.gz")){
 system.time(chart <- fread(str_c(mimic_path, "/icu/chartevents.csv.gz"), 
                            select = c("hadm_id", "itemid", 
                                       "charttime", "valuenum"), nThread = 8))
+}
 ```
-```{r}
+Creates a stripped down set of data and writes it to an intermediary file. This intermediary file is still over 1GB in size.
+```{r, eval = F}
 system.time(as_tibble(chart) %>% semi_join(icu_table, by = c("hadm_id")) %>%
   fwrite("chart_icustays.csv.gz", nThread = 8))
 ```
-```{r}
+Reads the intermediary file back into R.
+```{r, eval = F}
 system.time(chart_icu <- fread(str_c("chart_icustays.csv.gz"), 
             nThread=8))
 ```
-```{r}
-ditems<-read_csv(str_c(mimic_path, "/icu/d_items.csv.gz"))
-#chartitems <- c(220045, 220050, 220052, )
+Outputs a subset of data that contains the most common vitals measurements of the type requested.
+```{r, eval = F}
+chartfil_tble <- filter(chart_icu, itemid=c(220179, 220181, 220045, 220210, 
+                                    223761, 220045)) %>% print(width = Inf)
 ```
+Due to performance issues. I used the below code to read in the pre-filtered data set from Dr. Zhou. 
+```{r}
+chartfilter <- fread(str_c(mimic_path, 
+  "/mimic-iv-derived-data/chartevents_filtered_itemid.csv.gz"), header = FALSE,
+  col.names = c("subject_id", "hadm_id","stayid","charttime","itemid","valuenum"
+                )) %>% print(width = Inf)
+```
+Converts the stripped down data to a tibble and changes the charttime variable to a data instead of a character value.
+```{r}
+chartfilter_tble <- as_tibble(chartfilter) %>% 
+  mutate(charttime=ymd_hms(charttime)) %>% print(width = Inf)
+```
+
 ## Q8. Putting things together
 
 Let us create a tibble for all ICU stays, where rows are  
@@ -405,11 +448,30 @@ and columns contains at least following variables
 - an indicator variable whether the patient died within 30 days of hospital admission  
 
 ```{r}
-icu_table %>% group_by(subject_id) %>% slice_min(intime) %>% 
-  arrange(subject_id) %>% left_join(admit_table, by = "subject_id", 
-                                    "hadm_id") %>% left_join(pat_table, 
-                                                             by = "subject_id")
+icutble_uniq <- icu_table %>% group_by(subject_id) %>% filter(rank(intime) == 1) %>%
+  ungroup() %>% left_join(admit_table, by = c("subject_id", "hadm_id")) %>% 
+  left_join(pat_table, by = "subject_id") %>% mutate(age_at_adm = 
+  year(admittime) - anchor_year + anchor_age) %>% filter(age_at_adm > 18) %>%
+  print(width = Inf)
 ```
+
+Merging Lab Results
 ```{r}
-labevent_subset %>% group_by(subject_id) %>% slice_min(charttime)
+labmerge <- labevent_subset %>% semi_join(icutble_uniq, by = 
+                                          c("subject_id", "hadm_id")) %>%
+  left_join(select(icutble_uniq, subject_id, hadm_id, intime), 
+  by = c("subject_id", "hadm_id")) %>% filter(charttime>=intime) %>% 
+  group_by(subject_id, itemid) %>% arrange(charttime, .by_group=TRUE) %>% 
+  slice_head(n=1) %>% select(-charttime, -intime) %>% 
+  spread(key=itemid, value=valuenum) %>% print(width = Inf)
 ```
+
+```{r}
+labmerge %>% right_join(icutble_uniq, by = c("subject_id", "hadm_id")) %>%
+  ungroup() %>% rename_at(vars(as.character(labitem_list$itemid)), 
+                          ~labitem_list$labitem) %>% print(width = Inf)
+```
+
+
+
+
