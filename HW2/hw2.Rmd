@@ -20,9 +20,9 @@ library(lubridate)
 
 os <- sessionInfo()$running
 if (str_detect(os, "Linux")) {
-  mimic_path <- "/usr/203b-data/mimic-iv"
+  mimic_path <- "/usr/203b-data"
 } else if (str_detect(os, "Windows")) {
-  mimic_path <- "C:/Users/dsheh/Desktop/mimic-iv"
+  mimic_path <- "C:/Users/dsheh/Desktop"
 }
 ```
 
@@ -34,7 +34,7 @@ At this moment, you should already get credentialed on the PhysioNet. Please inc
 
 ![PhysioNet Credential](./credential.PNG)
 
-Note: In order for the image to appear when this document is knitted, the image file (credential.PNG) must be in same directory as this RMarkdown file.
+Note: In order for the image to appear when this document is knitted, the image file (credential.PNG) must be in same directory as this RMarkdown file. I have also committed a PDF of the Data Use Agreement to GitHub as well.
 
 ## Q2. `read.csv` (base R) vs `read_csv` (tidyverse) vs `fread` (data.table)
 
@@ -47,28 +47,28 @@ In this homework, we stick to the tidyverse.
 
 ```{r}
 
-system.time(read.csv(str_c(mimic_path, "/core/admissions.csv.gz"), 
+system.time(read.csv(str_c(mimic_path, "/mimic-iv/core/admissions.csv.gz"), 
   header=TRUE))
 
 ```
 
 ```{r}
 
-system.time(read_csv(str_c(mimic_path, "/core/admissions.csv.gz")))
+system.time(read_csv(str_c(mimic_path, "/mimic-iv/core/admissions.csv.gz")))
 
 
 ```
 
 ```{r}
 
-system.time(fread(str_c(mimic_path, "/core/admissions.csv.gz"), 
+system.time(fread(str_c(mimic_path, "/mimic-iv/core/admissions.csv.gz"), 
   header=TRUE))
 
 ```
 
 There is a large speed difference between read.csv (8.73s) and read_csv (2.67s). There is a smaller speed difference between read_csv and fread (1.33s). fread is the fastest, followed by read_csv and finally read.csv.
 
-The exact timing will vary based on the environment in which these are ran and resource utilization at the time.
+The exact timing will vary based on the environment in which these are ran and resource utilization at the time. When I knit the document I get slightly different times for these than the numbers listed above.
 These timing are from running on my Windows laptop.
 
 ## Q3. ICU stays
@@ -84,7 +84,7 @@ These timing are from running on my Windows laptop.
 **Solution:**
 
 ```{r}
-icu_table<-read_csv(str_c(mimic_path, "/icu/icustays.csv.gz")) %>% 
+icu_table <- read_csv(str_c(mimic_path, "/mimic-iv/icu/icustays.csv.gz")) %>% 
   print(width = Inf)
 ```
 Number of unique stay_id:
@@ -150,7 +150,7 @@ Note it is possible that one patient (uniquely identified by the `SUBJECT_ID`) i
 **Solution:**
 
 ```{r}
-admit_table <- read_csv(str_c(mimic_path, "/core/admissions.csv.gz"))
+admit_table <- read_csv(str_c(mimic_path, "/mimic-iv/core/admissions.csv.gz"))
 admit_table
 ```
 Admission Year
@@ -190,7 +190,7 @@ Admissions by day of the week appear to be roughly uniformly distributed. I did 
 Deaths in Each Year
 ```{r}
 admit_table %>% drop_na(deathtime) %>% ggplot(aes(year(deathtime))) + geom_bar(
-fill = "steelblue") + labs(x = "Number of Deaths per Year") 
+  fill = "steelblue") + labs(x = "Number of Deaths per Year") 
 ```
 
 The number of deaths in each year appears to be distributed similarly to the number of admission in each year, though the number of deaths is much smaller than the number of admissions. Deaths slowly increase until approximately 2140, then remain steady overall, but with some years having large drops until declining significantly around 2190. I did not restrict my analysis to unique patients because I wanted to see the total amount of deaths each year.
@@ -207,8 +207,9 @@ The most admissions appear to occur in EW EMER. EU OBSERVATION and ELECTIVE are 
 Number of Admissions per Patient 
 ```{r}
 num_admit <- admit_table %>% group_by(subject_id) %>% summarise(N = n())
+
 num_admit %>% summarise(Min = min(N), Max = max(N), Median = median(N), 
-                        Mean = mean(N), N = n())
+                          Mean = mean(N), N = n())
 
 ggplot(num_admit, aes(N)) + geom_bar(fill = "steelblue") + 
   labs(x = "Number of Visits", y = "Number of Patients")
@@ -249,13 +250,13 @@ distinct(admit_table, subject_id, .keep_all = TRUE) %>% ggplot(aes(language)) +
 geom_bar(fill = "steelblue") + labs(x = "Language")
 ```
 
-The vast majority of patients' language was English. Other languages were catergorized as "?". I chose to analyze distinct patients because I didn't want some languages to be over counted due to some patients visiting many times.
+The vast majority of patients' language was English. Other languages were categorized as "?". I chose to analyze distinct patients because I didn't want some languages to be over counted due to some patients visiting many times.
 
 
 Martial status  
 ```{r}
 distinct(admit_table, subject_id, .keep_all = TRUE) %>% 
-ggplot(aes(marital_status)) + geom_bar(fill = "steelblue") +
+  ggplot(aes(marital_status)) + geom_bar(fill = "steelblue") +
   labs(x = "Marital Status") 
 ```
 
@@ -264,8 +265,8 @@ Married and single are the largest groups, but there is a large group with N/A f
 Ethnicity  
 ```{r}
 distinct(admit_table, subject_id, .keep_all = TRUE) %>% 
-ggplot(aes(ethnicity)) + geom_bar(fill = "steelblue") + 
-theme(axis.text.x = element_text(angle = 90))
+  ggplot(aes(ethnicity)) + geom_bar(fill = "steelblue") + 
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
 The majority of patients in this data set are white. I chose to analyze distinct patients because I didn't want some ethnic groups to be over counted due to different rates of health care use.
@@ -274,6 +275,7 @@ Death (Need to change x axis info)
 ```{r}
 admit_table$deathflag = "No"
 admit_table[admit_table$hospital_expire_flag == 1, 16] = "Yes"
+
 admit_table %>% ggplot(aes(deathflag)) + 
   geom_bar(fill = "steelblue") + labs(x = "Number of Deaths") 
 
@@ -289,7 +291,7 @@ Explore `patients.csv.gz` (<https://mimic-iv.mit.edu/docs/datasets/core/patients
 - `anchor_age` (explain pattern you see)
 **Solution:**
 ```{r}
-pat_table <- read_csv(str_c(mimic_path, "/core/patients.csv.gz"))
+pat_table <- read_csv(str_c(mimic_path, "/mimic-iv/core/patients.csv.gz"))
 pat_table
 ```
 
@@ -322,7 +324,7 @@ We are interested in the lab measurements of creatinine (50912), potassium (5097
 **Solution:**
 Reads in the Lab Item Dictionary.
 ```{r}
-dlabitems <- read_csv(str_c(mimic_path, "/hosp/d_labitems.csv.gz")) %>%
+dlabitems <- read_csv(str_c(mimic_path, "/mimic-iv/hosp/d_labitems.csv.gz")) %>%
   print(width = Inf)
 ```
 Reads in the large labevents file, if the smaller filtered down file does not exist. Filters the file down based on ICU stays and a writes it to an intermediary file.
@@ -384,7 +386,7 @@ I set my code to not evaluate when knit because I can barely get it to run on my
 
 Reads in the dictionary for the chart events for the ICU.
 ```{r eval = F}
-ditems<-read_csv(str_c(mimic_path, "/icu/d_items.csv.gz")) %>% 
+ditems<-read_csv(str_c(mimic_path, "/mimic-iv/icu/d_items.csv.gz")) %>% 
   print(width = Inf)
 ```
 Lists the most common chart items for each vital sign that is wanted.
@@ -399,7 +401,7 @@ for (chartitem in c("heartrate", "Blood Pressure mean", "systolic",
 Reads in the chartevents file, which is very large, into R if the intermediary file doesn't exist.
 ```{r eval = F}
 if(!file.exists("chart_icustays.csv.gz")){
-system.time(chart <- fread(str_c(mimic_path, "/icu/chartevents.csv.gz"), 
+system.time(chart <- fread(str_c(mimic_path, "/mimic-iv/icu/chartevents.csv.gz"), 
                            select = c("hadm_id", "itemid", 
                                       "charttime", "valuenum"), nThread = 8))
 }
@@ -433,7 +435,7 @@ chartfilter_tble <- as_tibble(chartfilter) %>%
   mutate(charttime=ymd_hms(charttime)) %>% print(width = Inf)
 ```
 
-Removing the fread data from memory, as it is now a duplicate.
+Removing the chartfilter data.table from memory, as it is now a duplicate.
 ```{r}
 rm(chartfilter)
 gc()
@@ -458,22 +460,23 @@ This creates a tibble of the first chart event for each vital sign. We won't use
 ```{r}
 chartfilter_uniq <- chartfilter_tble %>% 
   left_join(select(icu_table, subject_id, hadm_id, intime), by = 
-              c("subject_id", "hadm_id")) %>% filter(charttime >= intime) %>% 
+            c("subject_id", "hadm_id")) %>% filter(charttime >= intime) %>% 
   group_by(subject_id, itemid) %>% 
-  arrange(intime, .by_group=TRUE) %>% slice_head(n = 1) %>% 
-  arrange(charttime, .by_group=TRUE) %>% slice_head(n = 1) %>% 
+  arrange(intime, .by_group = TRUE) %>% slice_head(n = 1) %>% 
+  arrange(charttime, .by_group = TRUE) %>% slice_head(n = 1) %>% 
   print(width = Inf)
 ```
 
-Now that we have generated a smaller data set from this, we deallocate it from memory so we improve performance and don't cause issues due to lack of memory.
+Now that we have generated a smaller data set from this, we deallocate the larger tibble from memory so we improve performance and reduce issues due to lack of memory.
 ```{r}
 rm(chartfilter_tble)
 gc()
 ```
 
 ```{r}
-icutble_uniq <- icu_table %>% group_by(subject_id) %>% filter(rank(intime) == 1) %>%
-  ungroup() %>% left_join(admit_table, by = c("subject_id", "hadm_id")) %>% 
+icutble_uniq <- icu_table %>% group_by(subject_id) %>% 
+  filter(rank(intime) == 1) %>% ungroup() %>% 
+  left_join(admit_table, by = c("subject_id", "hadm_id")) %>% 
   left_join(pat_table, by = "subject_id") %>% mutate(age_at_adm = 
   year(admittime) - anchor_year + anchor_age) %>% filter(age_at_adm > 18) %>%
   print(width = Inf)
@@ -484,10 +487,10 @@ Merging Lab Results
 labmerge <- labevent_subset %>% semi_join(icutble_uniq, by = 
                                           c("subject_id", "hadm_id")) %>%
   left_join(select(icutble_uniq, subject_id, hadm_id, intime), 
-  by = c("subject_id", "hadm_id")) %>% filter(charttime>=intime) %>% 
+  by = c("subject_id", "hadm_id")) %>% filter(charttime >= intime) %>% 
   group_by(subject_id, itemid) %>% arrange(charttime, .by_group=TRUE) %>% 
-  slice_head(n=1) %>% select(-charttime, -intime) %>% 
-  spread(key=itemid, value=valuenum) %>% print(width = Inf)
+  slice_head(n = 1) %>% select(-charttime, -intime) %>% 
+  spread(key = itemid, value = valuenum) %>% print(width = Inf)
 ```
 Renaming our columns to the lab item names instead of the itemids 
 ```{r}
@@ -500,7 +503,8 @@ labfinal <- labmerge %>% right_join(icutble_uniq, by = c("subject_id",
 Removing more data no longer needed from memory to improve performance.
 ```{r}
 rm(labmerge, lab_icu, labevent_subset, dlabitems, labitems, labitem_list, 
-   chartfilter)
+  chartfilter)
+
 gc()
 ```
 
