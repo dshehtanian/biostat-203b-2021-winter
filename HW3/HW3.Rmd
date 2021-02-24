@@ -1,11 +1,12 @@
 ---
 title: "Biostat 203B Homework 3"
+author: "Dominic Shehtanian"
 subtitle: Due Mar 5 @ 11:59PM
 output:
-  # ioslides_presentation: default
   html_document:
     toc: true
     toc_depth: 4
+  # ioslides_presentation: default
 ---
 
 Display machine information:
@@ -42,6 +43,8 @@ This section documents how to install PostgreSQL and create a database `mimiciv`
     5. Set up primary keys `psql -d mimiciv -f constraint.sql`. This takes less than one hour.  
     6. Deposit a subset of labevents data, which contains only ICU stays and the lab items we need, to a table `mimic-labevent-icu` in the `mimiciv` database.
     7. Deposit a subset of chartevents data, which contains only ICU stays and the chart events we need, to a table `mimic-chartevent-icu` in the `mimiciv` database.
+
+**Solution:** Acknowledged and retained for reference.
 
 ## Q1. Compile the ICU cohort in HW2 Q8 from the PostgreSQL database `mimiciv`. 
 
@@ -98,26 +101,26 @@ icustays_tble <- tbl(con, Id(schema = "mimic_icu", table = "icustays")) %>%
 
 4. Connect to the patients table.
 ```{r}
-# TODO
-# patients_tble <-
+patients_tble <- tbl(con, Id(schema = "mimic_core", table = "patients")) %>%
+  print(width = Inf)
 ```
 
 5. Connect to the admissions table.
 ```{r}
-# TODO
-# admissions_tble <- 
+admissions_tble <- tbl(con, Id(schema = "mimic_core", table = "admissions")) %>%
+  print(width = Inf)
 ```
 
 6. Connect to the `mimic_labevents_icu` table.
 ```{r}
-# TODO
-# labevents_tble <-
+labevents_tble <- tbl(con, Id(schema = "public", 
+                      table = "mimic_labevents_icu")) %>% print(width = Inf)
 ```
 
 7. Connect to `mimic_chartevents_icu` table.
 ```{r}
-# TODO
-# chartevents_tble <- 
+chartevents_tble <- tbl(con, Id(schema = "public", 
+                        table = "mimic_chartevents_icu")) %>% print(width = Inf)
 ```
 
 8. Put things together. Using one chain of pipes `%>%` to perform following data wrangling steps: (i) keep only the first ICU stay of each unique patient, (ii) merge in admissions and patients tables, (iii) keep adults only (age at admission >= 18), (iv) merge in the labevents and chartevents tables, (v) display the SQL query, (vi) collect SQL query result into memory as a tibble, (vii) create an indicator for 30-day mortality, (viii) save the final tibble to an `icu_cohort.rds` R data file in the `mimiciv_shiny` folder.
