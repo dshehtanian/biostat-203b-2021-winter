@@ -85,9 +85,6 @@ dbListTables(con)
 ```
 
 List schemas and tables in the `mimiciv` database (bash command).
-```{bash, include = !is_teaching_server, eval = !is_teaching_server}
-psql -U huazhou -d mimiciv -c "\dt *."
-```
 
 ```{bash, include = is_teaching_server, eval = is_teaching_server}
 psql -U postgres -d mimiciv -c "\dt *."
