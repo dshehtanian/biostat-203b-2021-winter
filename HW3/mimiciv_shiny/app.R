@@ -28,13 +28,12 @@ ui <- fluidPage(
                                         "Discharge Location", "Insurance", 
                                         "Language", "Marital Status", 
                                         "Ethnicity", "Gender", 
-                                        "Died Within 30 Days of Admission",
-                                        "Anchor Year Group"),
+                                        "Died Within 30 Days of Admission"),
                             selected = "First Care Unit")),
                 mainPanel(plotOutput("demoPlot"),
                           verbatimTextOutput("demoSum"))
               )),
-    tabPanel("Lab/Chart and Time Data", 
+    tabPanel("Lab and Chart Data", 
               sidebarLayout(
                 sidebarPanel(
                   selectInput("var", 
@@ -48,11 +47,7 @@ ui <- fluidPage(
                                           "Bicarbonate", "Calcium", "Chloride",
                                           "Creatinine", "Glucose", "Magnesium",
                                           "Potassium", "Sodium", "Hematocrit", 
-                                          "White Blood Cell", "Lactate", 
-                                          "Intime", "Outtime", "Length of Stay",
-                                          "Discharge Time", "Death Time", 
-                                          "Anchor Age", "Anchor Year", 
-                                          "Age at Admission"),
+                                          "White Blood Cell", "Lactate"),
                               selected = "Heart Rate"),
                   selectInput("gtype",
                               label = "How do you want to display the data?",
@@ -67,7 +62,33 @@ ui <- fluidPage(
               
                 mainPanel(plotOutput("distPlot"),
                           verbatimTextOutput("distSum"))
-                ))))
+                )),
+    tabPanel("Date and Time Data", 
+             sidebarLayout(
+               sidebarPanel(
+                 selectInput("var3", 
+                             label = "Choose Lab/Chart Data to Display",
+                             choices = c("Intime (Hour)", "Intime (Day)", 
+                                         "Intime (Month)", "Intime (Year)", 
+                                         "Outtime (Hour)", "Outtime (Day)",
+                                         "Outtime (Month)", "Outtime (Year)", 
+                                         "Length of Stay", 
+                                         "Discharge Time (Hour)", 
+                                         "Discharge Time (Day)", 
+                                         "Discharge Time (Month)", 
+                                         "Discharge Time (Year)",
+                                         "Death Time (Hour)", 
+                                         "Death Time (Day)", 
+                                         "Death Time (Month)", 
+                                         "Death Time (Year)", "Anchor Age", 
+                                         "Anchor Year", "Anchor Year Group",
+                                         "Age at Admission" 
+                                         ),
+                             selected = "Intime (Hour)")
+             ),
+             mainPanel(plotOutput("timePlot"))
+             
+    ))))
   
 
 
@@ -98,15 +119,9 @@ server <- function(input, output) {
                     "Sodium" = icudata$sodium, 
                     "Hematocrit" = icudata$hematocrit, 
                     "White Blood Cell" = icudata$wbc,
-                    "Lactate" = icudata$lactate, 
-                    "Intime" = icudata$intime, "Outtime" = icudata$outtime, 
-                    "Length of Stay" = icudata$los, 
-                    "Discharge Time" = icudata$dischtime, 
-                    "Death Time" = icudata$deathtime, 
-                    "Anchor Age" = icudata$anchor_age, 
-                    "Anchor Year" = icudata$anchor_year, 
-                    "Age at Admission" = icudata$age_at_adm
+                    "Lactate" = icudata$lactate
     )
+    
     x <- data.frame(data1)
     names(x) <- c("obs_val")
     
@@ -114,7 +129,8 @@ server <- function(input, output) {
     if ("Histogram" %in% input$gtype) {
       bins <- seq(min(data1, na.rm = TRUE),max(data1, na.rm = TRUE), 
                   length.out = input$bins+1)
-      hist(data1, breaks = bins, col = 'steelblue', border = 'white', 
+      hist(data1, breaks = bins, col = 'steelblue', border = 'white',
+           main = paste("Histogram of" , str_c(input$var)),
            xlab = str_c(input$var))
     }
     if ("Boxplot" %in% input$gtype) {
@@ -147,15 +163,9 @@ server <- function(input, output) {
                     "Sodium" = icudata$sodium, 
                     "Hematocrit" = icudata$hematocrit, 
                     "White Blood Cell" = icudata$wbc,
-                    "Lactate" = icudata$lactate, 
-                    "Intime" = icudata$intime, "Outtime" = icudata$outtime, 
-                    "Length of Stay" = icudata$los, 
-                    "Discharge Time" = icudata$dischtime, 
-                    "Death Time" = icudata$deathtime, 
-                    "Anchor Age" = icudata$anchor_age, 
-                    "Anchor Year" = icudata$anchor_year, 
-                    "Age at Admission" = icudata$age_at_adm
+                    "Lactate" = icudata$lactate
     )
+    
     x <- data.frame(data1)
     names(x) <- c("obs_val")
     
@@ -179,8 +189,7 @@ server <- function(input, output) {
                     "Ethnicity" = icudata$ethnicity, 
                     "Gender" = icudata$gender, 
                     "Died Within 30 Days of Admission" = 
-                      icudata$died_within_30d, "Anchor Year Group" = 
-                      icudata$anchor_year_group)
+                      icudata$died_within_30d)
     
     y <- data.frame(data2)
     names(y) <- c("obs_val")
@@ -200,12 +209,51 @@ server <- function(input, output) {
                     "Ethnicity" = icudata$ethnicity, 
                     "Gender" = icudata$gender,
                     "Died Within 30 Days of Admission" = 
-                      icudata$died_within_30d, "Anchor Year Group" = 
-                      icudata$anchor_year_group)  
+                      icudata$died_within_30d)  
     
     y <- data.frame(data2)
     names(y) <- c("obs_val")
     y %>% group_by(obs_val) %>% summarise(N=n()) %>% print()
+  })
+  
+  output$timePlot <- renderPlot({
+    # generate bins based on input$bins from ui.R
+    data3 <- switch(input$var3, 
+                    "Intime (Hour)" = hour(icudata$intime), 
+                    "Intime (Day)" = day(icudata$intime), 
+                    "Intime (Month)" = month(icudata$intime, label = TRUE), 
+                    "Intime (Year)" = year(icudata$intime), 
+                    "Outtime (Hour)" = hour(icudata$outtime),
+                    "Outtime (Day)" = day(icudata$outtime),
+                    "Outtime (Month)" = month(icudata$outtime, label = TRUE),
+                    "Outtime (Year)" = year(icudata$outtime), 
+                    "Length of Stay" = icudata$los, 
+                    "Discharge Time (Hour)" = hour(icudata$dischtime), 
+                    "Discharge Time (Day)" = day(icudata$dischtime), 
+                    "Discharge Time (Month)" = month(icudata$dischtime , label = TRUE), 
+                    "Discharge Time (Year)" = year(icudata$dischtime),
+                    "Death Time (Hour)" = hour(icudata$deathtime), 
+                    "Death Time (Day)" = day(icudata$deathtime), 
+                    "Death Time (Month)" = as_tibble(month(icudata$deathtime, label = TRUE)) %>% drop_na(), 
+                    "Death Time (Year)" = year(icudata$deathtime), 
+                    "Anchor Age" = icudata$anchor_age, 
+                    "Anchor Year" = icudata$anchor_year, 
+                    "Anchor Year Group" = icudata$anchor_year_group, 
+                    "Age at Admission" = icudata$age_at_adm
+    )
+    z <- data.frame(data3)
+    names(z) <- c("obs_val")
+    hist_time <- c("Length of Stay", "Anchor Age", "Anchor Year", 
+                   "Age at Admission", "Intime (Year)", "Outtime (Year)",
+                   "Discharge Time (Year)", "Death Time (Year)")
+    
+    # draw the histogram with the specified number of bins
+
+      z %>% ggplot(aes(x = obs_val)) + 
+        geom_bar(fill = "steelblue") + labs(x = str_c(input$var3)) 
+
+    
+    
   })
 }
 # Run the application 
