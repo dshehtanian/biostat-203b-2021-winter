@@ -109,7 +109,40 @@ server <- function(input, output) {
     
   })
   output$distSum <- renderPrint({
+    data1 <- switch(input$var, 
+                    "Heart Rate" = icudata$heart_rate,
+                    "Non-Invasive Blood Pressure - Systolic" = 
+                      icudata$non_invasive_blood_pressure_systolic,
+                    "Non-Invasive Blood Pressure - Mean" = 
+                      icudata$non_invasive_blood_pressure_mean,
+                    "Respiratory Rate" = icudata$respiratory_rate,
+                    "Temperature (F)" = icudata$temperature_fahrenheit,
+                    "Arterial Blood Pressure - Systolic" = 
+                      icudata$arterial_blood_pressure_systolic,
+                    "Arterial Blood Pressure - Mean" = 
+                      icudata$arterial_blood_pressure_mean,
+                    "Bicarbonate" = icudata$bicarbonate, 
+                    "Calcium" = icudata$calcium, 
+                    "Chloride" = icudata$chloride,
+                    "Creatinine" = icudata$creatinine, 
+                    "Glucose" = icudata$glucose, 
+                    "Magnesium" = icudata$magnesium,
+                    "Potassium" = icudata$potassium, 
+                    "Sodium" = icudata$sodium, 
+                    "Hematocrit" = icudata$hematocrit, 
+                    "White Blood Cell" = icudata$wbc,
+                    "Lactate" = icudata$lactate,
+    )
+    x <- data.frame(data1)
+    names(x) <- c("obs_val")
     
+    summarise(x,Mean = mean(obs_val, na.rm = TRUE), St.Dev. = 
+              sd(obs_val, na.rm = TRUE),  Min = min(obs_val, na.rm = TRUE), 
+              Q1 = quantile(obs_val, 0.25, na.rm = TRUE), Median = 
+              quantile(obs_val, 0.5, na.rm = TRUE), 
+              Q3 = quantile(obs_val, 0.75, na.rm = TRUE), 
+              Max = max(obs_val, na.rm = TRUE))
+
   })
   output$demoPlot <- renderPlot({
     data2 <- switch(input$var2, "Ethnicity" = icudata$ethnicity, "Language" = icudata$language)
