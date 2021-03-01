@@ -484,10 +484,10 @@ library(tidyverse)</code></pre>
 #port  &lt;- &#39;5432&#39;
 user  &lt;- ifelse(Sys.info()[[&quot;nodename&quot;]] == &quot;ucla-biostat-203b&quot;, 
                 &#39;postgres&#39;, # on teaching server
-                &#39;huazhou&#39;)  # on my MacBook
+                &#39;dominic&#39;)  # on my PC
 password &lt;- ifelse(Sys.info()[[&quot;nodename&quot;]] == &quot;ucla-biostat-203b&quot;,
                    &#39;postgres&#39;, # on teaching server
-                   &#39;huazhou&#39;)  # on my MacBook   
+                   &#39;dominic&#39;)  # on my PC   
 dbname &lt;- &#39;mimiciv&#39;
 # Connect to the database using the configuration settings
 (con &lt;- dbConnect(RPostgreSQL::PostgreSQL(), 
@@ -1017,6 +1017,7 @@ if (!dir.exists(&quot;mimiciv_shiny&quot;)) {
 <div id="q2.-shiny-app" class="section level2">
 <h2>Q2. Shiny app</h2>
 <p>Develop a Shiny app for exploring the ICU cohort data created in Q1. The app should reside in the <code>mimiciv_shiny</code> folder. The app should provide easy access to the graphical and numerical summaries of variables (demographics, lab measurements, vitals) in the ICU cohort.</p>
+<p><strong>Solution:</strong> See app.R file in the mimiciv_shiny directory.</p>
 </div>
 
 

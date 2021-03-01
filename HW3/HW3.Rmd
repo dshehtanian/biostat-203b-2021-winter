@@ -62,10 +62,10 @@ Below is an outline of steps.
 #port  <- '5432'
 user  <- ifelse(Sys.info()[["nodename"]] == "ucla-biostat-203b", 
                 'postgres', # on teaching server
-                'huazhou')  # on my MacBook
+                'dominic')  # on my PC
 password <- ifelse(Sys.info()[["nodename"]] == "ucla-biostat-203b",
                    'postgres', # on teaching server
-                   'huazhou')  # on my MacBook   
+                   'dominic')  # on my PC   
 dbname <- 'mimiciv'
 # Connect to the database using the configuration settings
 (con <- dbConnect(RPostgreSQL::PostgreSQL(), 
@@ -153,3 +153,6 @@ rm(list = ls())
 ## Q2. Shiny app
 
 Develop a Shiny app for exploring the ICU cohort data created in Q1. The app should reside in the `mimiciv_shiny` folder. The app should provide easy access to the graphical and numerical summaries of variables (demographics, lab measurements, vitals) in the ICU cohort.
+
+**Solution:**
+See app.R file in the mimiciv_shiny directory.

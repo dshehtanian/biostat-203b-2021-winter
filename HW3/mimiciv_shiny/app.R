@@ -6,17 +6,22 @@
 #
 #    http://shiny.rstudio.com/
 #
+# HW3 - Shiny App - Dominic Shehtanian
 
+# This app has a couple second time for graphs to pop in at first, 
+# but then runs fine
 library(shiny)
 library(tidyverse)
 library(ggplot2)
 
 icudata <- readRDS("./icu_cohort.rds")
 
-# Define UI for application that draws a histogram
+# UI portion
 ui <- fluidPage(
   
   titlePanel("ICU Cohort Data Summary"),
+# Defines tabs for different data types
+# Tab 1 - Demographic Data
   tabsetPanel(
     tabPanel("Demographic Data", 
              sidebarLayout(
@@ -33,6 +38,7 @@ ui <- fluidPage(
                 mainPanel(plotOutput("demoPlot"),
                           verbatimTextOutput("demoSum"))
               )),
+# Tab 2 - Lab and Chart Data
     tabPanel("Lab and Chart Data", 
               sidebarLayout(
                 sidebarPanel(
@@ -47,7 +53,8 @@ ui <- fluidPage(
                                           "Bicarbonate", "Calcium", "Chloride",
                                           "Creatinine", "Glucose", "Magnesium",
                                           "Potassium", "Sodium", "Hematocrit", 
-                                          "White Blood Cell", "Lactate"),
+                                          "White Blood Cell", "Lactate", 
+                                          "Length of Stay"),
                               selected = "Heart Rate"),
                   selectInput("gtype",
                               label = "How do you want to display the data?",
@@ -63,6 +70,7 @@ ui <- fluidPage(
                 mainPanel(plotOutput("distPlot"),
                           verbatimTextOutput("distSum"))
                 )),
+# Tab 3 - Date and Time Data
     tabPanel("Date and Time Data", 
              sidebarLayout(
                sidebarPanel(
@@ -72,7 +80,6 @@ ui <- fluidPage(
                                          "Intime (Month)", "Intime (Year)", 
                                          "Outtime (Hour)", "Outtime (Day)",
                                          "Outtime (Month)", "Outtime (Year)", 
-                                         "Length of Stay", 
                                          "Discharge Time (Hour)", 
                                          "Discharge Time (Day)", 
                                          "Discharge Time (Month)", 
@@ -92,9 +99,9 @@ ui <- fluidPage(
   
 
 
-# Define server logic required to draw a histogram
+# Server Portion
 server <- function(input, output) {
-  
+# This function defines the plots for Tab 2 - Lab/Chart Data 
   output$distPlot <- renderPlot({
     # generate bins based on input$bins from ui.R
     data1 <- switch(input$var, 
@@ -119,7 +126,8 @@ server <- function(input, output) {
                     "Sodium" = icudata$sodium, 
                     "Hematocrit" = icudata$hematocrit, 
                     "White Blood Cell" = icudata$wbc,
-                    "Lactate" = icudata$lactate
+                    "Lactate" = icudata$lactate,
+                    "Length of Stay" = icudata$los 
     )
     
     x <- data.frame(data1)
@@ -130,7 +138,7 @@ server <- function(input, output) {
       bins <- seq(min(data1, na.rm = TRUE),max(data1, na.rm = TRUE), 
                   length.out = input$bins+1)
       hist(data1, breaks = bins, col = 'steelblue', border = 'white',
-           main = paste("Histogram of" , str_c(input$var)),
+           main = str_c("Histogram of ", input$var),
            xlab = str_c(input$var))
     }
     if ("Boxplot" %in% input$gtype) {
@@ -140,6 +148,7 @@ server <- function(input, output) {
     
     
   })
+# This function defines summary statistics for Tab 2 - Lab/Chart Data 
   output$distSum <- renderPrint({
     data1 <- switch(input$var, 
                     "Heart Rate" = icudata$heart_rate,
@@ -163,7 +172,8 @@ server <- function(input, output) {
                     "Sodium" = icudata$sodium, 
                     "Hematocrit" = icudata$hematocrit, 
                     "White Blood Cell" = icudata$wbc,
-                    "Lactate" = icudata$lactate
+                    "Lactate" = icudata$lactate, 
+                    "Length of Stay" = icudata$los 
     )
     
     x <- data.frame(data1)
@@ -177,6 +187,7 @@ server <- function(input, output) {
               Max = max(obs_val, na.rm = TRUE))
     
   })
+# This function defines the plots for Tab 1 - Demographic Data
   output$demoPlot <- renderPlot({
     data2 <- switch(input$var2, "First Care Unit" = icudata$first_careunit,
                     "Last Care Unit" = icudata$last_careunit,
@@ -196,7 +207,7 @@ server <- function(input, output) {
     y %>% ggplot(aes(x = obs_val)) + geom_bar(mapping = aes(fill = obs_val)) + 
       labs(x = str_c(input$var2)) + coord_flip() 
   })  
-
+# This function defines counts for Tab 1 - Demographic Data
   output$demoSum <- renderPrint({
     data2 <- switch(input$var2, "First Care Unit" = icudata$first_careunit,
                     "Last Care Unit" = icudata$last_careunit,
@@ -215,7 +226,7 @@ server <- function(input, output) {
     names(y) <- c("obs_val")
     y %>% group_by(obs_val) %>% summarise(N=n()) %>% print()
   })
-  
+# This function defines the plots for Tab 3 - Time and Date Data  
   output$timePlot <- renderPlot({
     # generate bins based on input$bins from ui.R
     data3 <- switch(input$var3, 
@@ -227,7 +238,6 @@ server <- function(input, output) {
                     "Outtime (Day)" = day(icudata$outtime),
                     "Outtime (Month)" = month(icudata$outtime, label = TRUE),
                     "Outtime (Year)" = year(icudata$outtime), 
-                    "Length of Stay" = icudata$los, 
                     "Discharge Time (Hour)" = hour(icudata$dischtime), 
                     "Discharge Time (Day)" = day(icudata$dischtime), 
                     "Discharge Time (Month)" = month(icudata$dischtime , label = TRUE), 
@@ -243,17 +253,10 @@ server <- function(input, output) {
     )
     z <- data.frame(data3)
     names(z) <- c("obs_val")
-    hist_time <- c("Length of Stay", "Anchor Age", "Anchor Year", 
-                   "Age at Admission", "Intime (Year)", "Outtime (Year)",
-                   "Discharge Time (Year)", "Death Time (Year)")
-    
+ 
     # draw the histogram with the specified number of bins
-
       z %>% ggplot(aes(x = obs_val)) + 
         geom_bar(fill = "steelblue") + labs(x = str_c(input$var3)) 
-
-    
-    
   })
 }
 # Run the application 
