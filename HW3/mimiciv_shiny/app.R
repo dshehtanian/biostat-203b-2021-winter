@@ -18,7 +18,7 @@ ui <- fluidPage(
   
   # Application title
   titlePanel("ICU Cohort Data Summmary"),
-
+  
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
@@ -39,7 +39,7 @@ ui <- fluidPage(
                               "Potassium", "Sodium", "Hematocrit", 
                               "White Blood Cell", "Lactate", "Ethnicity"),
                   selected = "Heart Rate"),
-
+      
       sliderInput("bins",
                   "Number of bins:",
                   min = 1,
@@ -47,12 +47,15 @@ ui <- fluidPage(
                   value = 50),
       selectInput("var2", 
                   label = "Choose a Demographic Data to display",
-                  choices = c("Ethnicity", "Language"),
-                  selected = "Ethnicity")
-     
+                  choices = c("First Care Unit", "Last Care Unit","Admission Type",
+                              "Admission Location", "Discharge Location", 
+                              "Insurance", "Language", "Marital Status", 
+                              "Ethnicity", "Gender"),
+                  selected = "Gender")
+      
       
     ),
-
+    
     # Show a plot of the generated distribution
     mainPanel(
       plotOutput("distPlot"),
@@ -137,20 +140,29 @@ server <- function(input, output) {
     names(x) <- c("obs_val")
     
     summarise(x,Mean = mean(obs_val, na.rm = TRUE), St.Dev. = 
-              sd(obs_val, na.rm = TRUE),  Min = min(obs_val, na.rm = TRUE), 
+                sd(obs_val, na.rm = TRUE),  Min = min(obs_val, na.rm = TRUE), 
               Q1 = quantile(obs_val, 0.25, na.rm = TRUE), Median = 
-              quantile(obs_val, 0.5, na.rm = TRUE), 
+                quantile(obs_val, 0.5, na.rm = TRUE), 
               Q3 = quantile(obs_val, 0.75, na.rm = TRUE), 
               Max = max(obs_val, na.rm = TRUE))
-
+    
   })
   output$demoPlot <- renderPlot({
-    data2 <- switch(input$var2, "Ethnicity" = icudata$ethnicity, "Language" = icudata$language)
+    data2 <- switch(input$var2, "First Care Unit" = icudata$first_careunit,
+                    "Last Care Unit" = icudata$last_careunit,
+                    "Admission Type" = icudata$admission_type,
+                    "Admission Location" = icudata$admission_location,
+                    "Discharge Location" = icudata$discharge_location, 
+                    "Insurance" = icudata$insurance, 
+                    "Language" = icudata$language, 
+                    "Marital Status" = icudata$marital_status, 
+                    "Ethnicity" = icudata$ethnicity, 
+                    "Gender" = icudata$gender)
     
     y <- data.frame(data2)
     names(y) <- c("obs_val")
-    y %>% ggplot(aes(x = obs_val)) + geom_bar() + 
-      labs(x = str_c(input$var)) 
+    y %>% ggplot(aes(x = obs_val)) + geom_bar(fill="darkgreen") + 
+      labs(x = str_c(input$var2)) + coord_flip() 
   })  
 }
 
