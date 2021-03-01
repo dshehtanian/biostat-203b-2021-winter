@@ -23,10 +23,12 @@ ui <- fluidPage(
               sidebarPanel(
                 selectInput("var2", 
                             label = "Choose a Demographic Data to display",
-                            choices = c("First Care Unit", "Last Care Unit","Admission Type",
-                                        "Admission Location", "Discharge Location", 
-                                        "Insurance", "Language", "Marital Status", 
-                                        "Ethnicity", "Gender"),
+                            choices = c("First Care Unit", "Last Care Unit",
+                                        "Admission Type", "Admission Location", 
+                                        "Discharge Location", "Insurance", 
+                                        "Language", "Marital Status", 
+                                        "Ethnicity", "Gender", 
+                                        "Died Within 30 Days of Admission"),
                             selected = "Gender")),
                 mainPanel(plotOutput("demoPlot"),
                           verbatimTextOutput("demoSum"))
@@ -156,7 +158,9 @@ server <- function(input, output) {
                     "Language" = icudata$language, 
                     "Marital Status" = icudata$marital_status, 
                     "Ethnicity" = icudata$ethnicity, 
-                    "Gender" = icudata$gender)
+                    "Gender" = icudata$gender, 
+                    "Died Within 30 Days of Admission" = 
+                      icudata$died_within_30d)
     
     y <- data.frame(data2)
     names(y) <- c("obs_val")
@@ -164,7 +168,7 @@ server <- function(input, output) {
       labs(x = str_c(input$var2)) + coord_flip() 
   })  
 
-  output$demoSum <- renderPlot({
+  output$demoSum <- renderPrint({
     data2 <- switch(input$var2, "First Care Unit" = icudata$first_careunit,
                     "Last Care Unit" = icudata$last_careunit,
                     "Admission Type" = icudata$admission_type,
@@ -174,9 +178,13 @@ server <- function(input, output) {
                     "Language" = icudata$language, 
                     "Marital Status" = icudata$marital_status, 
                     "Ethnicity" = icudata$ethnicity, 
-                    "Gender" = icudata$gender)  
-    y <- data.table(data2)
-    tables(y)
+                    "Gender" = icudata$gender,
+                    "Died Within 30 Days of Admission" = 
+                      icudata$died_within_30d)  
+    
+    y <- data.frame(data2)
+    names(y) <- c("obs_val")
+    y %>% group_by(obs_val) %>% summarise(N=n()) %>% print()
   })
 }
 # Run the application 
