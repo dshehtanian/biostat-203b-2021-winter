@@ -18,17 +18,16 @@ ui <- fluidPage(
   
   # Application title
   titlePanel("ICU Cohort Data Summmary"),
-  
-  selectInput("gtype",
-              label = "How do you want to display the data?",
-              choices = c("Histogram", "Boxplot"), 
-              selected = "Histogram"),
-  
+
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
+      selectInput("gtype",
+                  label = "How do you want to display the data?",
+                  choices = c("Histogram", "Boxplot"), 
+                  selected = "Histogram"),
       selectInput("var", 
-                  label = "Choose a variable to display",
+                  label = "Choose Lab/Chart Data to Display",
                   choices = c("Heart Rate", 
                               "Non-Invasive Blood Pressure - Systolic",
                               "Non-Invasive Blood Pressure - Mean",
@@ -38,19 +37,27 @@ ui <- fluidPage(
                               "Bicarbonate", "Calcium", "Chloride",
                               "Creatinine", "Glucose", "Magnesium",
                               "Potassium", "Sodium", "Hematocrit", 
-                              "White Blood Cell", "Lactate"),
+                              "White Blood Cell", "Lactate", "Ethnicity"),
                   selected = "Heart Rate"),
+
       sliderInput("bins",
                   "Number of bins:",
                   min = 1,
                   max = 200,
-                  value = 50)
+                  value = 50),
+      selectInput("var2", 
+                  label = "Choose a Demographic Data to display",
+                  choices = c("Ethnicity", "Language"),
+                  selected = "Ethnicity")
+     
       
     ),
-    
+
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("distPlot")
+      plotOutput("distPlot"),
+      verbatimTextOutput("distSum"),
+      plotOutput("demoPlot")
     )
   )
 )
@@ -82,13 +89,15 @@ server <- function(input, output) {
                     "Sodium" = icudata$sodium, 
                     "Hematocrit" = icudata$hematocrit, 
                     "White Blood Cell" = icudata$wbc,
-                    "Lactate" = icudata$lactate
+                    "Lactate" = icudata$lactate,
     )
     x <- data.frame(data1)
     names(x) <- c("obs_val")
-    bins <- seq(min(data1, na.rm = TRUE),max(data1, na.rm = TRUE), length.out = input$bins+1)
+    
     # draw the histogram with the specified number of bins
     if ("Histogram" %in% input$gtype) {
+      bins <- seq(min(data1, na.rm = TRUE),max(data1, na.rm = TRUE), 
+                  length.out = input$bins+1)
       hist(data1, breaks = bins, col = 'steelblue', border = 'white', 
            xlab = str_c(input$var))
     }
@@ -97,9 +106,19 @@ server <- function(input, output) {
         labs(x = str_c(input$var)) 
     }
     
+    
   })
-  
-  
+  output$distSum <- renderPrint({
+    
+  })
+  output$demoPlot <- renderPlot({
+    data2 <- switch(input$var2, "Ethnicity" = icudata$ethnicity, "Language" = icudata$language)
+    
+    y <- data.frame(data2)
+    names(y) <- c("obs_val")
+    y %>% ggplot(aes(x = obs_val)) + geom_bar() + 
+      labs(x = str_c(input$var)) 
+  })  
 }
 
 # Run the application 
