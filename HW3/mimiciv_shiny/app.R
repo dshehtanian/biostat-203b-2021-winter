@@ -28,12 +28,13 @@ ui <- fluidPage(
                                         "Discharge Location", "Insurance", 
                                         "Language", "Marital Status", 
                                         "Ethnicity", "Gender", 
-                                        "Died Within 30 Days of Admission"),
-                            selected = "Gender")),
+                                        "Died Within 30 Days of Admission",
+                                        "Anchor Year Group"),
+                            selected = "First Care Unit")),
                 mainPanel(plotOutput("demoPlot"),
                           verbatimTextOutput("demoSum"))
               )),
-    tabPanel("Lab and Chart Data", 
+    tabPanel("Lab/Chart and Time Data", 
               sidebarLayout(
                 sidebarPanel(
                   selectInput("var", 
@@ -47,7 +48,11 @@ ui <- fluidPage(
                                           "Bicarbonate", "Calcium", "Chloride",
                                           "Creatinine", "Glucose", "Magnesium",
                                           "Potassium", "Sodium", "Hematocrit", 
-                                          "White Blood Cell", "Lactate", "Ethnicity"),
+                                          "White Blood Cell", "Lactate", 
+                                          "Intime", "Outtime", "Length of Stay",
+                                          "Discharge Time", "Death Time", 
+                                          "Anchor Age", "Anchor Year", 
+                                          "Age at Admission"),
                               selected = "Heart Rate"),
                   selectInput("gtype",
                               label = "How do you want to display the data?",
@@ -93,7 +98,14 @@ server <- function(input, output) {
                     "Sodium" = icudata$sodium, 
                     "Hematocrit" = icudata$hematocrit, 
                     "White Blood Cell" = icudata$wbc,
-                    "Lactate" = icudata$lactate
+                    "Lactate" = icudata$lactate, 
+                    "Intime" = icudata$intime, "Outtime" = icudata$outtime, 
+                    "Length of Stay" = icudata$los, 
+                    "Discharge Time" = icudata$dischtime, 
+                    "Death Time" = icudata$deathtime, 
+                    "Anchor Age" = icudata$anchor_age, 
+                    "Anchor Year" = icudata$anchor_year, 
+                    "Age at Admission" = icudata$age_at_adm
     )
     x <- data.frame(data1)
     names(x) <- c("obs_val")
@@ -135,7 +147,14 @@ server <- function(input, output) {
                     "Sodium" = icudata$sodium, 
                     "Hematocrit" = icudata$hematocrit, 
                     "White Blood Cell" = icudata$wbc,
-                    "Lactate" = icudata$lactate
+                    "Lactate" = icudata$lactate, 
+                    "Intime" = icudata$intime, "Outtime" = icudata$outtime, 
+                    "Length of Stay" = icudata$los, 
+                    "Discharge Time" = icudata$dischtime, 
+                    "Death Time" = icudata$deathtime, 
+                    "Anchor Age" = icudata$anchor_age, 
+                    "Anchor Year" = icudata$anchor_year, 
+                    "Age at Admission" = icudata$age_at_adm
     )
     x <- data.frame(data1)
     names(x) <- c("obs_val")
@@ -160,7 +179,8 @@ server <- function(input, output) {
                     "Ethnicity" = icudata$ethnicity, 
                     "Gender" = icudata$gender, 
                     "Died Within 30 Days of Admission" = 
-                      icudata$died_within_30d)
+                      icudata$died_within_30d, "Anchor Year Group" = 
+                      icudata$anchor_year_group)
     
     y <- data.frame(data2)
     names(y) <- c("obs_val")
@@ -180,7 +200,8 @@ server <- function(input, output) {
                     "Ethnicity" = icudata$ethnicity, 
                     "Gender" = icudata$gender,
                     "Died Within 30 Days of Admission" = 
-                      icudata$died_within_30d)  
+                      icudata$died_within_30d, "Anchor Year Group" = 
+                      icudata$anchor_year_group)  
     
     y <- data.frame(data2)
     names(y) <- c("obs_val")
