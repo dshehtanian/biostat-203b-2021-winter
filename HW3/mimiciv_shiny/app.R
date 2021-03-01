@@ -16,54 +16,55 @@ icudata <- readRDS("./icu_cohort.rds")
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   
-  # Application title
-  titlePanel("ICU Cohort Data Summmary"),
+  titlePanel("ICU Cohort Data Summary"),
+  tabsetPanel(
+    tabPanel("Demographic Data", 
+             sidebarLayout(
+              sidebarPanel(
+                selectInput("var2", 
+                            label = "Choose a Demographic Data to display",
+                            choices = c("First Care Unit", "Last Care Unit","Admission Type",
+                                        "Admission Location", "Discharge Location", 
+                                        "Insurance", "Language", "Marital Status", 
+                                        "Ethnicity", "Gender"),
+                            selected = "Gender")),
+                mainPanel(plotOutput("demoPlot"),
+                          verbatimTextOutput("demoSum"))
+              )
+    )),
+  tabsetPanel(
+    tabPanel("Lab and Chart Data", 
+              sidebarLayout(
+                sidebarPanel(
+                  selectInput("var", 
+                              label = "Choose Lab/Chart Data to Display",
+                              choices = c("Heart Rate", 
+                                          "Non-Invasive Blood Pressure - Systolic",
+                                          "Non-Invasive Blood Pressure - Mean",
+                                          "Respiratory Rate", "Temperature (F)",
+                                          "Arterial Blood Pressure - Systolic",
+                                          "Arterial Blood Pressure - Mean",
+                                          "Bicarbonate", "Calcium", "Chloride",
+                                          "Creatinine", "Glucose", "Magnesium",
+                                          "Potassium", "Sodium", "Hematocrit", 
+                                          "White Blood Cell", "Lactate", "Ethnicity"),
+                              selected = "Heart Rate"),
+                  selectInput("gtype",
+                              label = "How do you want to display the data?",
+                              choices = c("Histogram", "Boxplot"), 
+                              selected = "Histogram"),
+                  sliderInput("bins",
+                              "Number of bins:",
+                              min = 1,
+                              max = 200,
+                              value = 50)
+                ),
+              
+                mainPanel(plotOutput("distPlot"),
+                          verbatimTextOutput("distSum"))
+                ))))
   
-  # Sidebar with a slider input for number of bins 
-  sidebarLayout(
-    sidebarPanel(
-      selectInput("gtype",
-                  label = "How do you want to display the data?",
-                  choices = c("Histogram", "Boxplot"), 
-                  selected = "Histogram"),
-      selectInput("var", 
-                  label = "Choose Lab/Chart Data to Display",
-                  choices = c("Heart Rate", 
-                              "Non-Invasive Blood Pressure - Systolic",
-                              "Non-Invasive Blood Pressure - Mean",
-                              "Respiratory Rate", "Temperature (F)",
-                              "Arterial Blood Pressure - Systolic",
-                              "Arterial Blood Pressure - Mean",
-                              "Bicarbonate", "Calcium", "Chloride",
-                              "Creatinine", "Glucose", "Magnesium",
-                              "Potassium", "Sodium", "Hematocrit", 
-                              "White Blood Cell", "Lactate", "Ethnicity"),
-                  selected = "Heart Rate"),
-      
-      sliderInput("bins",
-                  "Number of bins:",
-                  min = 1,
-                  max = 200,
-                  value = 50),
-      selectInput("var2", 
-                  label = "Choose a Demographic Data to display",
-                  choices = c("First Care Unit", "Last Care Unit","Admission Type",
-                              "Admission Location", "Discharge Location", 
-                              "Insurance", "Language", "Marital Status", 
-                              "Ethnicity", "Gender"),
-                  selected = "Gender")
-      
-      
-    ),
-    
-    # Show a plot of the generated distribution
-    mainPanel(
-      plotOutput("distPlot"),
-      verbatimTextOutput("distSum"),
-      plotOutput("demoPlot")
-    )
-  )
-)
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -92,7 +93,7 @@ server <- function(input, output) {
                     "Sodium" = icudata$sodium, 
                     "Hematocrit" = icudata$hematocrit, 
                     "White Blood Cell" = icudata$wbc,
-                    "Lactate" = icudata$lactate,
+                    "Lactate" = icudata$lactate
     )
     x <- data.frame(data1)
     names(x) <- c("obs_val")
@@ -134,7 +135,7 @@ server <- function(input, output) {
                     "Sodium" = icudata$sodium, 
                     "Hematocrit" = icudata$hematocrit, 
                     "White Blood Cell" = icudata$wbc,
-                    "Lactate" = icudata$lactate,
+                    "Lactate" = icudata$lactate
     )
     x <- data.frame(data1)
     names(x) <- c("obs_val")
@@ -161,10 +162,24 @@ server <- function(input, output) {
     
     y <- data.frame(data2)
     names(y) <- c("obs_val")
-    y %>% ggplot(aes(x = obs_val)) + geom_bar(fill="darkgreen") + 
+    y %>% ggplot(aes(x = obs_val)) + geom_bar(mapping = aes(fill = obs_val)) + 
       labs(x = str_c(input$var2)) + coord_flip() 
   })  
-}
 
+  output$demoSum <- renderPlot({
+    data2 <- switch(input$var2, "First Care Unit" = icudata$first_careunit,
+                    "Last Care Unit" = icudata$last_careunit,
+                    "Admission Type" = icudata$admission_type,
+                    "Admission Location" = icudata$admission_location,
+                    "Discharge Location" = icudata$discharge_location, 
+                    "Insurance" = icudata$insurance, 
+                    "Language" = icudata$language, 
+                    "Marital Status" = icudata$marital_status, 
+                    "Ethnicity" = icudata$ethnicity, 
+                    "Gender" = icudata$gender)  
+    y <- data.table(data2)
+    tables(y)
+  })
+}
 # Run the application 
 shinyApp(ui = ui, server = server)
