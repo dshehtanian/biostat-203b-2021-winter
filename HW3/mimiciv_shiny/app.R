@@ -30,9 +30,7 @@ ui <- fluidPage(
                             selected = "Gender")),
                 mainPanel(plotOutput("demoPlot"),
                           verbatimTextOutput("demoSum"))
-              )
-    )),
-  tabsetPanel(
+              )),
     tabPanel("Lab and Chart Data", 
               sidebarLayout(
                 sidebarPanel(
