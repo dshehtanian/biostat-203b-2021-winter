@@ -37,6 +37,11 @@ Through the Shiny app developed in HW3, we observe abundant missing values in th
 
 3. Perform a data quality check of the ICU stays data. Discard variables with substantial missingness, say >5000 `NA`s. Replace apparent data entry errors by `NA`s.
 
+Reading in the ICU Cohort Data
+```{r}
+icudata <- readRDS("./icu_cohort.rds")
+```
+
 4. Impute missing values by `miceRanger` (request $m=3$ datasets). This step is very computational intensive. Make sure to save the imputation results as a file.
 
 5. Make imputation diagnostic plots and explain what they mean.
