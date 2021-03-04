@@ -8,7 +8,7 @@
 #
 # HW3 - Shiny App - Dominic Shehtanian
 
-# This app has a couple second time for graphs to pop in at first, 
+# This app has a takes 2-3 seconds before pop in on a cold run 
 # but then runs fine
 library(shiny)
 library(tidyverse)
@@ -45,16 +45,16 @@ ui <- fluidPage(
                   selectInput("var", 
                               label = "Choose Lab/Chart Data to Display",
                               choices = c("Heart Rate", 
-                                          "Non-Invasive Blood Pressure - Systolic",
-                                          "Non-Invasive Blood Pressure - Mean",
-                                          "Respiratory Rate", "Temperature (F)",
-                                          "Arterial Blood Pressure - Systolic",
-                                          "Arterial Blood Pressure - Mean",
-                                          "Bicarbonate", "Calcium", "Chloride",
-                                          "Creatinine", "Glucose", "Magnesium",
-                                          "Potassium", "Sodium", "Hematocrit", 
-                                          "White Blood Cell", "Lactate", 
-                                          "Length of Stay"),
+                                      "Non-Invasive Blood Pressure - Systolic",
+                                      "Non-Invasive Blood Pressure - Mean",
+                                      "Respiratory Rate", "Temperature (F)",
+                                      "Arterial Blood Pressure - Systolic",
+                                      "Arterial Blood Pressure - Mean",
+                                      "Bicarbonate", "Calcium", "Chloride",
+                                      "Creatinine", "Glucose", "Magnesium",
+                                      "Potassium", "Sodium", "Hematocrit", 
+                                      "White Blood Cell", "Lactate", 
+                                      "Length of Stay"),
                               selected = "Heart Rate"),
                   selectInput("gtype",
                               label = "How do you want to display the data?",
@@ -93,11 +93,11 @@ ui <- fluidPage(
                                          ),
                              selected = "Intime (Hour)")
              ),
-             mainPanel(plotOutput("timePlot"))
+             mainPanel(plotOutput("timePlot"),
+                       verbatimTextOutput("timeSum"))
              
     ))))
   
-
 
 # Server Portion
 server <- function(input, output) {
@@ -224,7 +224,7 @@ server <- function(input, output) {
     
     y <- data.frame(data2)
     names(y) <- c("obs_val")
-    y %>% group_by(obs_val) %>% summarise(N=n()) %>% print()
+    y %>% group_by(obs_val) %>% summarise(N = n()) %>% print()
   })
 # This function defines the plots for Tab 3 - Time and Date Data  
   output$timePlot <- renderPlot({
@@ -240,11 +240,14 @@ server <- function(input, output) {
                     "Outtime (Year)" = year(icudata$outtime), 
                     "Discharge Time (Hour)" = hour(icudata$dischtime), 
                     "Discharge Time (Day)" = day(icudata$dischtime), 
-                    "Discharge Time (Month)" = month(icudata$dischtime , label = TRUE), 
+                    "Discharge Time (Month)" = 
+                      month(icudata$dischtime , label = TRUE), 
                     "Discharge Time (Year)" = year(icudata$dischtime),
                     "Death Time (Hour)" = hour(icudata$deathtime), 
                     "Death Time (Day)" = day(icudata$deathtime), 
-                    "Death Time (Month)" = as_tibble(month(icudata$deathtime, label = TRUE)) %>% drop_na(), 
+                    "Death Time (Month)" = as_tibble(month(icudata$deathtime, 
+                                                           label = TRUE)) %>%
+                                                           drop_na(), 
                     "Death Time (Year)" = year(icudata$deathtime), 
                     "Anchor Age" = icudata$anchor_age, 
                     "Anchor Year" = icudata$anchor_year, 
@@ -257,6 +260,41 @@ server <- function(input, output) {
     # draw the histogram with the specified number of bins
       z %>% ggplot(aes(x = obs_val)) + 
         geom_bar(fill = "steelblue") + labs(x = str_c(input$var3)) 
+  })
+# This function defines counts for Tab 3 - Date and Time Data
+  output$timeSum <- renderPrint({
+    data3 <- switch(input$var3, 
+                    "Intime (Hour)" = hour(icudata$intime), 
+                    "Intime (Day)" = day(icudata$intime), 
+                    "Intime (Month)" = month(icudata$intime, label = TRUE), 
+                    "Intime (Year)" = year(icudata$intime), 
+                    "Outtime (Hour)" = hour(icudata$outtime),
+                    "Outtime (Day)" = day(icudata$outtime),
+                    "Outtime (Month)" = month(icudata$outtime, label = TRUE),
+                    "Outtime (Year)" = year(icudata$outtime), 
+                    "Discharge Time (Hour)" = hour(icudata$dischtime), 
+                    "Discharge Time (Day)" = day(icudata$dischtime), 
+                    "Discharge Time (Month)" = month(icudata$dischtime, 
+                                                     label = TRUE), 
+                    "Discharge Time (Year)" = year(icudata$dischtime),
+                    "Death Time (Hour)" = hour(icudata$deathtime), 
+                    "Death Time (Day)" = day(icudata$deathtime), 
+                    "Death Time (Month)" = as_tibble(month(icudata$deathtime,
+                                                           label = TRUE)) %>% 
+                                                           drop_na(), 
+                    "Death Time (Year)" = year(icudata$deathtime), 
+                    "Anchor Age" = icudata$anchor_age, 
+                    "Anchor Year" = icudata$anchor_year, 
+                    "Anchor Year Group" = icudata$anchor_year_group, 
+                    "Age at Admission" = icudata$age_at_adm
+    ) 
+    
+    z <- data.frame(data3)
+    names(z) <- c("obs_val")
+    # This prints all the rows for each tibble
+    # This allows user to scroll down to see the counts for every possible 
+    # observation if they want to.
+    z %>% group_by(obs_val) %>% summarise(N = n()) %>% print(n = nrow(z))
   })
 }
 # Run the application 

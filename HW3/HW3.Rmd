@@ -74,6 +74,8 @@ dbname <- 'mimiciv'
                   password = password))
 ```
 
+**Note:** If you run this code on your personal computer you may need to change the username/password information to connect to your database.
+
 2. List all schemas in the `mimiciv` database.
 ```{r}
 dbGetQuery(con, "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA")
