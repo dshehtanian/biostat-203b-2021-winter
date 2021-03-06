@@ -39,9 +39,17 @@ Through the Shiny app developed in HW3, we observe abundant missing values in th
 
 Reading in the ICU Cohort Data
 ```{r}
-icudata <- readRDS("./icu_cohort.rds")
+icudata <- as_tibble(readRDS("./icu_cohort.rds"))
+summary(icudata)
+#Dropping variables with >5000 NAs
+icudata_filtered <- select(icudata, -deathtime, -edregtime, -edouttime, -dod, 
+       -arterial_blood_pressure_systolic, -arterial_blood_pressure_mean,
+       -lactate)
 ```
 
+
+
+Based on the summary of icudata
 4. Impute missing values by `miceRanger` (request $m=3$ datasets). This step is very computational intensive. Make sure to save the imputation results as a file.
 
 5. Make imputation diagnostic plots and explain what they mean.
