@@ -75,9 +75,20 @@ icudata_filtered$heart_rate[
 summary(icudata_filtered)
 ```
 
+Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod, arterial blood pressure - systolic, arterial blood pressure - mean and lactate for large amounts of missing data. I replaced apparent data entry errors in heart rate, non-invasive blood pressure - systolic, and non-invasive blood pressure - mean with `NA`.
 
-Based on the summary of icudata
 4. Impute missing values by `miceRanger` (request $m=3$ datasets). This step is very computational intensive. Make sure to save the imputation results as a file.
+
+```{r, eval=FALSE}
+#Setting a seed for reproducabilty 
+set.seed(46846)
+
+system.time(icudata_imputed <- miceRanger(icudata_filtered, m = 3,
+                                          returnModels = TRUE, verbose = FALSE, 
+                                          max.depth = 10))
+icudata_imputed
+
+```
 
 5. Make imputation diagnostic plots and explain what they mean.
 
