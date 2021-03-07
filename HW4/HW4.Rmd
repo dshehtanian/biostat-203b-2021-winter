@@ -84,7 +84,7 @@ Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod,
 set.seed(46846)
 
 system.time(icudata_imputed <- miceRanger(icudata_filtered, m = 3,
-                                          returnModels = TRUE, verbose = FALSE, 
+                                          returnModels = TRUE, verbose = TRUE, 
                                           max.depth = 10))
 icudata_imputed
 
