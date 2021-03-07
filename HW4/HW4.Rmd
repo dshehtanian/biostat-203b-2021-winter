@@ -33,20 +33,47 @@ Through the Shiny app developed in HW3, we observe abundant missing values in th
 
 1. Explain the jargon MCAR, MAR, and MNAR.
 
+**Solution:**
+
+MCAR - Missing completely at random - The probabilty of being missing is the same for all cases.
+MAR - Missing at random - The probability of being missing depends only on observed values, not unobserved values. 
+MNAR - Missing not at random - The probability of being missing is unequal for unknown reasons.
+
 2. Explain in a couple of sentences how the Multiple Imputation by Chained Equations (MICE) work.
+
+**Solution**:
+
+All missing values in the dataset are replaced by the mean for that variable, then one at a time, each variable with missing observations has those observations set back to missing (from the first imputed values) and the observations are predicted using the other variables in the data set. This is repeated for a set number of cycles.
 
 3. Perform a data quality check of the ICU stays data. Discard variables with substantial missingness, say >5000 `NA`s. Replace apparent data entry errors by `NA`s.
 
-Reading in the ICU Cohort Data
+**Solution:**
+
+Based on [this article](https://pubmed.ncbi.nlm.nih.gov/7741618/#:~:text=The%20highest%20pressure%20recorded%20in,maximal%20lifting%20with%20slow%20exhalation.), it appears that the highest recorded blood pressure was 370.
+
+Based on [this article](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3273956/#:~:text=The%20fastest%20human%20ventricular%20conduction%20rate%20reported%20to%20date%20is,of%20480%20beats%20per%20minute.), it appears the highest recorded heart rate was 480.
 ```{r}
+#Reading in the ICU Cohort Data
 icudata <- as_tibble(readRDS("./icu_cohort.rds"))
 summary(icudata)
+
 #Dropping variables with >5000 NAs
 icudata_filtered <- select(icudata, -deathtime, -edregtime, -edouttime, -dod, 
        -arterial_blood_pressure_systolic, -arterial_blood_pressure_mean,
        -lactate)
-```
 
+#Replacing probable data entry errors with NA 
+icudata_filtered$non_invasive_blood_pressure_systolic[
+  icudata_filtered$non_invasive_blood_pressure_systolic > 370] <- NA
+
+icudata_filtered$non_invasive_blood_pressure_mean[
+  icudata_filtered$non_invasive_blood_pressure_mean > 370] <- NA
+
+# Based on 
+icudata_filtered$heart_rate[
+  icudata_filtered$heart_rate > 480] <- NA
+summary(icudata_filtered)
+```
 
 
 Based on the summary of icudata
