@@ -80,20 +80,16 @@ Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod,
 4. Impute missing values by `miceRanger` (request $m=3$ datasets). This step is very computational intensive. Make sure to save the imputation results as a file.
 
 ```{r, eval=FALSE}
-#Setting a seed for reproducibility
-set.seed(46846)
-
 seqTime <- system.time(
   miceObj <- miceRanger(
     icudata_filtered
     , m=3
-    , max.depth=10
+    , max.depth = 10
     , returnModels = TRUE
     , verbose=TRUE
   )
 )
 miceObj
-
 ```
 
 5. Make imputation diagnostic plots and explain what they mean.
