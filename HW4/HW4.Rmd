@@ -54,13 +54,13 @@ Based on [this article](https://pubmed.ncbi.nlm.nih.gov/7741618/#:~:text=The%20h
 Based on [this article](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3273956/#:~:text=The%20fastest%20human%20ventricular%20conduction%20rate%20reported%20to%20date%20is,of%20480%20beats%20per%20minute.), it appears the highest recorded heart rate was 480.
 ```{r}
 #Reading in the ICU Cohort Data
-icudata <- as_tibble(readRDS("./icu_cohort.rds"))
+icudata <- readRDS("./icu_cohort.rds")
 summary(icudata)
 
 #Dropping variables with >5000 NAs
 icudata_filtered <- select(icudata, -deathtime, -edregtime, -edouttime, -dod, 
        -arterial_blood_pressure_systolic, -arterial_blood_pressure_mean,
-       -lactate)
+       -lactate, -days_to_death)
 
 #Replacing probable data entry errors with NA 
 icudata_filtered$non_invasive_blood_pressure_systolic[
@@ -75,18 +75,25 @@ icudata_filtered$heart_rate[
 summary(icudata_filtered)
 ```
 
-Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod, arterial blood pressure - systolic, arterial blood pressure - mean and lactate for large amounts of missing data. I replaced apparent data entry errors in heart rate, non-invasive blood pressure - systolic, and non-invasive blood pressure - mean with `NA`.
+Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod, arterial blood pressure - systolic, arterial blood pressure - mean, lactate, and days to death for large amounts of missing data. I replaced apparent data entry errors in heart rate, non-invasive blood pressure - systolic, and non-invasive blood pressure - mean with `NA`.
 
 4. Impute missing values by `miceRanger` (request $m=3$ datasets). This step is very computational intensive. Make sure to save the imputation results as a file.
 
 ```{r, eval=FALSE}
-#Setting a seed for reproducabilty 
-set.seed(46846)
+#Setting a seed for reproducibility
+#set.seed(46846)
 
-system.time(icudata_imputed <- miceRanger(icudata_filtered, m = 3,
-                                          returnModels = TRUE, verbose = TRUE, 
-                                          max.depth = 10))
-icudata_imputed
+seqTime <- system.time(
+  miceObj <- miceRanger(
+    icudata_filtered
+    , m=3
+    , max.depth=10
+    , returnModels = TRUE
+    , verbose=TRUE
+  )
+)
+miceObj
+
 
 ```
 
