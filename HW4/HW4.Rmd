@@ -17,7 +17,7 @@ Display machine information:
 sessionInfo()
 ```
 Load database libraries and the tidyverse frontend:
-```{r}
+```{r setup}
 library(tidyverse)
 library(lubridate)
 library(miceRanger)
@@ -81,7 +81,7 @@ Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod,
 
 ```{r, eval=FALSE}
 #Setting a seed for reproducibility
-#set.seed(46846)
+set.seed(46846)
 
 seqTime <- system.time(
   miceObj <- miceRanger(
@@ -94,12 +94,19 @@ seqTime <- system.time(
 )
 miceObj
 
-
 ```
 
 5. Make imputation diagnostic plots and explain what they mean.
 
+```{r}
+plotDistributions(miceObj,vars = 'allNumeric')
+plotCorrelations(miceObj,vars = 'allNumeric')
+plotVarConvergence(miceObj,vars = 'allNumeric')
+```
 6. Obtain a complete data set by averaging the 3 imputed data sets.
+```{r}
+icu_imputed <- completeData(miceObj)
+```
 
 ## Q2. Predicting 30-day mortality
 
