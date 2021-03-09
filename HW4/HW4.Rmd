@@ -17,7 +17,7 @@ Display machine information:
 sessionInfo()
 ```
 Load database libraries and the tidyverse frontend:
-```{r}
+```{r setup}
 library(tidyverse)
 library(lubridate)
 library(miceRanger)
@@ -33,22 +33,115 @@ Through the Shiny app developed in HW3, we observe abundant missing values in th
 
 1. Explain the jargon MCAR, MAR, and MNAR.
 
+**Solution:**
+
+MCAR - Missing completely at random - The probabilty of being missing is the same for all cases.
+MAR - Missing at random - The probability of being missing depends only on observed values, not unobserved values. 
+MNAR - Missing not at random - The probability of being missing is unequal for unknown reasons.
+
 2. Explain in a couple of sentences how the Multiple Imputation by Chained Equations (MICE) work.
+
+**Solution**:
+
+All missing values in the dataset are replaced by the mean for that variable, then one at a time, each variable with missing observations has those observations set back to missing (from the first imputed values) and the observations are predicted using the other variables in the data set. This is repeated for a set number of cycles.
 
 3. Perform a data quality check of the ICU stays data. Discard variables with substantial missingness, say >5000 `NA`s. Replace apparent data entry errors by `NA`s.
 
+**Solution:**
+
+Based on [this article](https://pubmed.ncbi.nlm.nih.gov/7741618/#:~:text=The%20highest%20pressure%20recorded%20in,maximal%20lifting%20with%20slow%20exhalation.), it appears that the highest recorded blood pressure was 370.
+
+Based on [this article](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3273956/#:~:text=The%20fastest%20human%20ventricular%20conduction%20rate%20reported%20to%20date%20is,of%20480%20beats%20per%20minute.), it appears the highest recorded heart rate was 480.
+```{r}
+#Reading in the ICU Cohort Data
+icudata <- readRDS("./icu_cohort.rds")
+summary(icudata)
+
+#Dropping variables with >5000 NAs
+icudata_filtered <- select(icudata, -deathtime, -edregtime, -edouttime, -dod, 
+       -arterial_blood_pressure_systolic, -arterial_blood_pressure_mean,
+       -lactate, -days_to_death)
+
+#Replacing probable data entry errors with NA 
+icudata_filtered$non_invasive_blood_pressure_systolic[
+  icudata_filtered$non_invasive_blood_pressure_systolic > 370] <- NA
+
+icudata_filtered$non_invasive_blood_pressure_mean[
+  icudata_filtered$non_invasive_blood_pressure_mean > 370] <- NA
+
+# Based on 
+icudata_filtered$heart_rate[
+  icudata_filtered$heart_rate > 480] <- NA
+summary(icudata_filtered)
+```
+
+Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod, arterial blood pressure - systolic, arterial blood pressure - mean, lactate, and days to death for large amounts of missing data. I replaced apparent data entry errors in heart rate, non-invasive blood pressure - systolic, and non-invasive blood pressure - mean with `NA`.
+
 4. Impute missing values by `miceRanger` (request $m=3$ datasets). This step is very computational intensive. Make sure to save the imputation results as a file.
+
+```{r, eval=FALSE}
+#max depth needed to be set otherwise my R instance would crash on the 
+#teaching server
+seqTime <- system.time(
+  miceObj <- miceRanger(
+    icudata_filtered
+    , m=3
+    , max.depth = 10
+    , returnModels = TRUE
+    , verbose=TRUE
+  )
+)
+miceObj
+```
 
 5. Make imputation diagnostic plots and explain what they mean.
 
+```{r}
+plotDistributions(miceObj,vars = 'allNumeric')
+plotCorrelations(miceObj,vars = 'allNumeric')
+plotVarConvergence(miceObj,vars = 'allNumeric')
+```
 6. Obtain a complete data set by averaging the 3 imputed data sets.
+```{r}
+icu_imputed <- completeData(miceObj)
+```
 
 ## Q2. Predicting 30-day mortality
 
 Develop at least two analytic approaches for predicting the 30-day mortality of patients admitted to ICU using demographic information (gender, age, marital status, ethnicity), first lab measurements during ICU stay, and first vital measurements during ICU stay. For example, you can use (1) logistic regression (`glm()` function), (2) logistic regression with lasso penalty (glmnet package), (3) random forest (randomForest package), or (4) neural network.
 
 1. Partition data into 80% training set and 20% test set. Stratify partitioning according the 30-day mortality status.
-
+```{r}
+d30_true <- icu_imputed$Dataset_1[died_within_30d == TRUE]
+d30_false <- icu_imputed$Dataset_1[died_within_30d == FALSE]
+train_size30T <- round(nrow(d30_true) * .8)
+train_size30F <- round(nrow(d30_false) * .8)
+smpl_true <- sample(1:nrow(d30_true), train_size30T)
+smpl_false <- sample(1:nrow(d30_false), train_size30F)
+train_data <- rbind(d30_true[smpl_true], d30_false[smpl_false])
+test_data <- rbind(d30_true[-smpl_true], d30_false[-smpl_false])
+```
 2. Train the models using the training set.
+```{r}
+#Logistic Regression
+lgstc_reg <- glm(died_within_30d ~ gender + anchor_age + marital_status + 
+                   ethnicity + heart_rate + 
+                   non_invasive_blood_pressure_systolic + 
+                   non_invasive_blood_pressure_mean + respiratory_rate + 
+                   temperature_fahrenheit + bicarbonate + calcium + chloride +
+                   creatinine + glucose + magnesium + potassium + sodium +
+                   hematocrit + wbc, data=train_data, family = binomial)
+summary(lgstc_reg)
+```
 
 3. Compare model prediction performance on the test set.
+```{r}
+
+```
+
+
+
+
+
+
+

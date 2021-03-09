@@ -27,4 +27,3 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 labevents_icustays.csv.gz
-icu_cohort.rds
