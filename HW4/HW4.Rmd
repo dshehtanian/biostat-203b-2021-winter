@@ -80,6 +80,8 @@ Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod,
 4. Impute missing values by `miceRanger` (request $m=3$ datasets). This step is very computational intensive. Make sure to save the imputation results as a file.
 
 ```{r, eval=FALSE}
+#max depth needed to be set otherwise my R instance would crash on the 
+#teaching server
 seqTime <- system.time(
   miceObj <- miceRanger(
     icudata_filtered
@@ -120,5 +122,26 @@ train_data <- rbind(d30_true[smpl_true], d30_false[smpl_false])
 test_data <- rbind(d30_true[-smpl_true], d30_false[-smpl_false])
 ```
 2. Train the models using the training set.
+```{r}
+#Logistic Regression
+lgstc_reg <- glm(died_within_30d ~ gender + anchor_age + marital_status + 
+                   ethnicity + heart_rate + 
+                   non_invasive_blood_pressure_systolic + 
+                   non_invasive_blood_pressure_mean + respiratory_rate + 
+                   temperature_fahrenheit + bicarbonate + calcium + chloride +
+                   creatinine + glucose + magnesium + potassium + sodium +
+                   hematocrit + wbc, data=train_data, family = binomial)
+summary(lgstc_reg)
+```
 
 3. Compare model prediction performance on the test set.
+```{r}
+
+```
+
+
+
+
+
+
+
