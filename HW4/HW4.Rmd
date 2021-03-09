@@ -109,7 +109,16 @@ icu_imputed <- completeData(miceObj)
 Develop at least two analytic approaches for predicting the 30-day mortality of patients admitted to ICU using demographic information (gender, age, marital status, ethnicity), first lab measurements during ICU stay, and first vital measurements during ICU stay. For example, you can use (1) logistic regression (`glm()` function), (2) logistic regression with lasso penalty (glmnet package), (3) random forest (randomForest package), or (4) neural network.
 
 1. Partition data into 80% training set and 20% test set. Stratify partitioning according the 30-day mortality status.
-
+```{r}
+d30_true <- icu_imputed$Dataset_1[died_within_30d == TRUE]
+d30_false <- icu_imputed$Dataset_1[died_within_30d == FALSE]
+train_size30T <- round(nrow(d30_true) * .8)
+train_size30F <- round(nrow(d30_false) * .8)
+smpl_true <- sample(1:nrow(d30_true), train_size30T)
+smpl_false <- sample(1:nrow(d30_false), train_size30F)
+train_data <- rbind(d30_true[smpl_true], d30_false[smpl_false])
+test_data <- rbind(d30_true[-smpl_true], d30_false[-smpl_false])
+```
 2. Train the models using the training set.
 
 3. Compare model prediction performance on the test set.
