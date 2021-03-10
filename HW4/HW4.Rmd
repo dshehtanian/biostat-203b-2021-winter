@@ -21,6 +21,7 @@ Load database libraries and the tidyverse frontend:
 library(tidyverse)
 library(lubridate)
 library(miceRanger)
+library(glmnet)
 ```
 
 ## Q1. Missing data
@@ -59,8 +60,12 @@ summary(icudata)
 
 #Dropping variables with >5000 NAs
 icudata_filtered <- select(icudata, -deathtime, -edregtime, -edouttime, -dod, 
-       -arterial_blood_pressure_systolic, -arterial_blood_pressure_mean,
-       -lactate, -days_to_death)
+                           -arterial_blood_pressure_systolic, 
+                           -arterial_blood_pressure_mean, -lactate, 
+                           -days_to_death, -subject_id, -hadm_id, -stay_id,
+                           -intime, -outtime, -los, -admittime, -dischtime, 
+                           -deathtime, -anchor_age, -anchor_year, 
+                           -anchor_year_group)
 
 #Replacing probable data entry errors with NA 
 icudata_filtered$non_invasive_blood_pressure_systolic[
@@ -104,6 +109,29 @@ plotVarConvergence(miceObj,vars = 'allNumeric')
 6. Obtain a complete data set by averaging the 3 imputed data sets.
 ```{r}
 icu_imputed <- completeData(miceObj)
+x <- (model.matrix(died_within_30d ~ -1 + gender + age_at_adm + marital_status + 
+                   ethnicity + heart_rate + 
+                   non_invasive_blood_pressure_systolic + 
+                   non_invasive_blood_pressure_mean + respiratory_rate + 
+                   temperature_fahrenheit + bicarbonate + calcium + chloride +
+                   creatinine + glucose + magnesium + potassium + sodium +
+                   hematocrit + wbc, data=icu_imputed$Dataset_1) + 
+      model.matrix(died_within_30d ~ -1 + gender + age_at_adm + marital_status + 
+                   ethnicity + heart_rate + 
+                   non_invasive_blood_pressure_systolic + 
+                   non_invasive_blood_pressure_mean + respiratory_rate + 
+                   temperature_fahrenheit + bicarbonate + calcium + chloride +
+                   creatinine + glucose + magnesium + potassium + sodium +
+                   hematocrit + wbc, data=icu_imputed$Dataset_3) +
+      model.matrix(died_within_30d ~ -1 + gender + age_at_adm + marital_status + 
+                   ethnicity + heart_rate + 
+                   non_invasive_blood_pressure_systolic + 
+                   non_invasive_blood_pressure_mean + respiratory_rate + 
+                   temperature_fahrenheit + bicarbonate + calcium + chloride +
+                   creatinine + glucose + magnesium + potassium + sodium +
+                   hematocrit + wbc, data=icu_imputed$Dataset_3))/3
+#None of the values for died within 30 days were imputed, thus the values in all three sets provided by miceRanger are the same
+y <- ifelse(icu_imputed$Dataset_1$died_within_30d == "TRUE", 1, 0)
 ```
 
 ## Q2. Predicting 30-day mortality
@@ -124,7 +152,7 @@ test_data <- rbind(d30_true[-smpl_true], d30_false[-smpl_false])
 2. Train the models using the training set.
 ```{r}
 #Logistic Regression
-lgstc_reg <- glm(died_within_30d ~ gender + anchor_age + marital_status + 
+lgstc_reg <- glm(died_within_30d ~ gender + age_at_adm + marital_status + 
                    ethnicity + heart_rate + 
                    non_invasive_blood_pressure_systolic + 
                    non_invasive_blood_pressure_mean + respiratory_rate + 
@@ -132,6 +160,12 @@ lgstc_reg <- glm(died_within_30d ~ gender + anchor_age + marital_status +
                    creatinine + glucose + magnesium + potassium + sodium +
                    hematocrit + wbc, data=train_data, family = binomial)
 summary(lgstc_reg)
+
+#Logistic Regression with Lasso
+#need to divide into train and test data
+lfit=glmnet(x, y, family = "binomial", alpha = 1)
+summary(lfit)
+plot(lfit, xvar = "lambda", label = TRUE)
 ```
 
 3. Compare model prediction performance on the test set.
