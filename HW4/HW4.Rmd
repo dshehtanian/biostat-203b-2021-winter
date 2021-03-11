@@ -65,7 +65,9 @@ icudata_filtered <- select(icudata, -deathtime, -edregtime, -edouttime, -dod,
                            -days_to_death, -subject_id, -hadm_id, -stay_id,
                            -intime, -outtime, -los, -admittime, -dischtime, 
                            -deathtime, -anchor_age, -anchor_year, 
-                           -anchor_year_group)
+                           -anchor_year_group, -first_careunit, -last_careunit,
+                           -admission_type, -admission_location, 
+                           -discharge_location, -hospital_expire_flag)
 
 #Replacing probable data entry errors with NA 
 icudata_filtered$non_invasive_blood_pressure_systolic[
@@ -109,29 +111,11 @@ plotVarConvergence(miceObj,vars = 'allNumeric')
 6. Obtain a complete data set by averaging the 3 imputed data sets.
 ```{r}
 icu_imputed <- completeData(miceObj)
-x <- (model.matrix(died_within_30d ~ -1 + gender + age_at_adm + marital_status + 
-                   ethnicity + heart_rate + 
-                   non_invasive_blood_pressure_systolic + 
-                   non_invasive_blood_pressure_mean + respiratory_rate + 
-                   temperature_fahrenheit + bicarbonate + calcium + chloride +
-                   creatinine + glucose + magnesium + potassium + sodium +
-                   hematocrit + wbc, data=icu_imputed$Dataset_1) + 
-      model.matrix(died_within_30d ~ -1 + gender + age_at_adm + marital_status + 
-                   ethnicity + heart_rate + 
-                   non_invasive_blood_pressure_systolic + 
-                   non_invasive_blood_pressure_mean + respiratory_rate + 
-                   temperature_fahrenheit + bicarbonate + calcium + chloride +
-                   creatinine + glucose + magnesium + potassium + sodium +
-                   hematocrit + wbc, data=icu_imputed$Dataset_3) +
-      model.matrix(died_within_30d ~ -1 + gender + age_at_adm + marital_status + 
-                   ethnicity + heart_rate + 
-                   non_invasive_blood_pressure_systolic + 
-                   non_invasive_blood_pressure_mean + respiratory_rate + 
-                   temperature_fahrenheit + bicarbonate + calcium + chloride +
-                   creatinine + glucose + magnesium + potassium + sodium +
-                   hematocrit + wbc, data=icu_imputed$Dataset_3))/3
-#None of the values for died within 30 days were imputed, thus the values in all three sets provided by miceRanger are the same
-y <- ifelse(icu_imputed$Dataset_1$died_within_30d == "TRUE", 1, 0)
+
+icu_analysis <- data.frame((data.matrix(icu_imputed$Dataset_1) + 
+                              data.matrix(icu_imputed$Dataset_2) + 
+                              data.matrix(icu_imputed$Dataset_3))/3)
+icu_analysis
 ```
 
 ## Q2. Predicting 30-day mortality
@@ -140,14 +124,18 @@ Develop at least two analytic approaches for predicting the 30-day mortality of 
 
 1. Partition data into 80% training set and 20% test set. Stratify partitioning according the 30-day mortality status.
 ```{r}
-d30_true <- icu_imputed$Dataset_1[died_within_30d == TRUE]
-d30_false <- icu_imputed$Dataset_1[died_within_30d == FALSE]
+d30_true <- icu_analysis[icu_analysis$died_within_30d==1,1:28]
+d30_false <- icu_analysis[icu_analysis$died_within_30d==0,1:28]
 train_size30T <- round(nrow(d30_true) * .8)
 train_size30F <- round(nrow(d30_false) * .8)
 smpl_true <- sample(1:nrow(d30_true), train_size30T)
 smpl_false <- sample(1:nrow(d30_false), train_size30F)
-train_data <- rbind(d30_true[smpl_true], d30_false[smpl_false])
-test_data <- rbind(d30_true[-smpl_true], d30_false[-smpl_false])
+icu_train <- rbind(d30_true[smpl_true,1:28], d30_false[smpl_false,1:28])
+x_train
+y_train
+icu_test <- rbind(d30_true[-smpl_true,1:28], d30_false[-smpl_false,1:28])
+x_test
+y_test
 ```
 2. Train the models using the training set.
 ```{r}
@@ -158,7 +146,7 @@ lgstc_reg <- glm(died_within_30d ~ gender + age_at_adm + marital_status +
                    non_invasive_blood_pressure_mean + respiratory_rate + 
                    temperature_fahrenheit + bicarbonate + calcium + chloride +
                    creatinine + glucose + magnesium + potassium + sodium +
-                   hematocrit + wbc, data=train_data, family = binomial)
+                   hematocrit + wbc, data=icu_analysis, family = binomial)
 summary(lgstc_reg)
 
 #Logistic Regression with Lasso
