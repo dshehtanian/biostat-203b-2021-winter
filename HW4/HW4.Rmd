@@ -22,6 +22,7 @@ library(tidyverse)
 library(lubridate)
 library(miceRanger)
 library(glmnet)
+library(caret)
 ```
 
 ## Q1. Missing data
@@ -76,9 +77,12 @@ icudata_filtered$non_invasive_blood_pressure_systolic[
 icudata_filtered$non_invasive_blood_pressure_mean[
   icudata_filtered$non_invasive_blood_pressure_mean > 370] <- NA
 
-# Based on 
 icudata_filtered$heart_rate[
   icudata_filtered$heart_rate > 480] <- NA
+
+icudata_filtered$temperature_fahrenheit[
+  icudata_filtered$temperature_fahrenheit < 60] <- NA
+
 summary(icudata_filtered)
 ```
 
@@ -124,18 +128,34 @@ Develop at least two analytic approaches for predicting the 30-day mortality of 
 
 1. Partition data into 80% training set and 20% test set. Stratify partitioning according the 30-day mortality status.
 ```{r}
-d30_true <- icu_analysis[icu_analysis$died_within_30d==1,1:28]
-d30_false <- icu_analysis[icu_analysis$died_within_30d==0,1:28]
+d30_true <- icu_analysis[icu_analysis$died_within_30d==1,1:ncol(icu_analysis)]
+d30_false <- icu_analysis[icu_analysis$died_within_30d==0,1:ncol(icu_analysis)]
 train_size30T <- round(nrow(d30_true) * .8)
 train_size30F <- round(nrow(d30_false) * .8)
 smpl_true <- sample(1:nrow(d30_true), train_size30T)
 smpl_false <- sample(1:nrow(d30_false), train_size30F)
-icu_train <- rbind(d30_true[smpl_true,1:28], d30_false[smpl_false,1:28])
-x_train
-y_train
-icu_test <- rbind(d30_true[-smpl_true,1:28], d30_false[-smpl_false,1:28])
-x_test
-y_test
+icu_train <- rbind(d30_true[smpl_true,1:ncol(icu_analysis)], 
+                   d30_false[smpl_false,1:ncol(icu_analysis)])
+x_train <- model.matrix(died_within_30d ~ -1 + gender + age_at_adm + 
+                          marital_status + ethnicity + heart_rate + 
+                          non_invasive_blood_pressure_systolic + 
+                          non_invasive_blood_pressure_mean +
+                          respiratory_rate + temperature_fahrenheit + 
+                          bicarbonate + calcium + chloride + creatinine + 
+                          glucose + magnesium + potassium + sodium + 
+                          hematocrit + wbc, data = icu_train)
+y_train <- ifelse(icu_train$died_within_30d == 1, 1, 0)
+icu_test <- rbind(d30_true[-smpl_true,1:ncol(icu_analysis)],
+                  d30_false[-smpl_false,1:ncol(icu_analysis)])
+x_test <- model.matrix(died_within_30d ~ -1 + gender + age_at_adm + 
+                          marital_status + ethnicity + heart_rate + 
+                          non_invasive_blood_pressure_systolic + 
+                          non_invasive_blood_pressure_mean +
+                          respiratory_rate + temperature_fahrenheit + 
+                          bicarbonate + calcium + chloride + creatinine + 
+                          glucose + magnesium + potassium + sodium + 
+                          hematocrit + wbc, data = icu_test)
+y_test <- ifelse(icu_test$died_within_30d == 1, 1, 0)
 ```
 2. Train the models using the training set.
 ```{r}
@@ -146,19 +166,23 @@ lgstc_reg <- glm(died_within_30d ~ gender + age_at_adm + marital_status +
                    non_invasive_blood_pressure_mean + respiratory_rate + 
                    temperature_fahrenheit + bicarbonate + calcium + chloride +
                    creatinine + glucose + magnesium + potassium + sodium +
-                   hematocrit + wbc, data=icu_analysis, family = binomial)
+                   hematocrit + wbc, data=icu_train, family = binomial)
 summary(lgstc_reg)
 
 #Logistic Regression with Lasso
-#need to divide into train and test data
-lfit=glmnet(x, y, family = "binomial", alpha = 1)
+lfit=glmnet(x_train, y_train, family = "binomial", alpha = 1)
 summary(lfit)
 plot(lfit, xvar = "lambda", label = TRUE)
 ```
 
 3. Compare model prediction performance on the test set.
 ```{r}
-
+#Logistic Regression with Lasso
+pred_val <- predict(lfit, newx = x_test, type = "response", s = lfit$lambda)
+dev_val <- -2*colSums(y_test * log(pred_val) + (1 - y_test) * log(1 - pred_val))
+tibble(lambda = lfit$lambda, dev_val = dev_val) %>% ggplot() + 
+  geom_point(mapping = aes(x = lambda, y = dev_val)) + scale_x_log10() + 
+  labs(y = "Binomial deviance on validation set", x = "Lambda")
 ```
 
 
