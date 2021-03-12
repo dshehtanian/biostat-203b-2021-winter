@@ -37,7 +37,7 @@ Through the Shiny app developed in HW3, we observe abundant missing values in th
 
 **Solution:**
 
-MCAR - Missing completely at random - The probabilty of being missing is the same for all cases.
+MCAR - Missing completely at random - The probability of being missing is the same for all cases.
 MAR - Missing at random - The probability of being missing depends only on observed values, not unobserved values. 
 MNAR - Missing not at random - The probability of being missing is unequal for unknown reasons.
 
@@ -77,8 +77,7 @@ icudata_filtered$non_invasive_blood_pressure_systolic[
 icudata_filtered$non_invasive_blood_pressure_mean[
   icudata_filtered$non_invasive_blood_pressure_mean > 370] <- NA
 
-icudata_filtered$heart_rate[
-  icudata_filtered$heart_rate > 480] <- NA
+icudata_filtered$heart_rate[icudata_filtered$heart_rate > 480] <- NA
 
 icudata_filtered$temperature_fahrenheit[
   icudata_filtered$temperature_fahrenheit < 60] <- NA
@@ -86,7 +85,7 @@ icudata_filtered$temperature_fahrenheit[
 summary(icudata_filtered)
 ```
 
-Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod, arterial blood pressure - systolic, arterial blood pressure - mean, lactate, and days to death for large amounts of missing data. I replaced apparent data entry errors in heart rate, non-invasive blood pressure - systolic, and non-invasive blood pressure - mean with `NA`.
+Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod, arterial blood pressure - systolic, arterial blood pressure - mean, lactate, and days to death for large amounts of missing data. I replaced apparent data entry errors in heart rate, non-invasive blood pressure - systolic, non-invasive blood pressure - mean, and temperature (Farenheit) with `NA`.
 
 4. Impute missing values by `miceRanger` (request $m=3$ datasets). This step is very computational intensive. Make sure to save the imputation results as a file.
 
@@ -95,14 +94,11 @@ Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod,
 #teaching server
 seqTime <- system.time(
   miceObj <- miceRanger(
-    icudata_filtered
-    , m=3
-    , max.depth = 10
-    , returnModels = TRUE
-    , verbose=TRUE
-  )
-)
+    icudata_filtered, m = 3, 
+    #max.depth = 10, 
+    returnModels = TRUE, verbose=TRUE))
 miceObj
+
 ```
 
 5. Make imputation diagnostic plots and explain what they mean.
@@ -112,10 +108,17 @@ plotDistributions(miceObj,vars = 'allNumeric')
 plotCorrelations(miceObj,vars = 'allNumeric')
 plotVarConvergence(miceObj,vars = 'allNumeric')
 ```
+**Solution:**
+The first set of plots, shows the distribution of the original data (in red) and the imputed data (in black). For most of the variable these match fairly closely. However, for heart rate and respiratory rate there appears to be large deviations. This implies that data is not missing completely at random.
+
+The second set of plots shows boxplots of the correlations between imputed values at each iteration.
+
+The third set of plotsm shows wheter the imputed data has converged. It looks like most of our variables have converged. However, it looks like hemocrit and calcium haven't converged after 10 iterations.
 6. Obtain a complete data set by averaging the 3 imputed data sets.
 ```{r}
 icu_imputed <- completeData(miceObj)
-
+#Need to convert to matrix to average
+#Reconverted to data frame to use column names in part 2
 icu_analysis <- data.frame((data.matrix(icu_imputed$Dataset_1) + 
                               data.matrix(icu_imputed$Dataset_2) + 
                               data.matrix(icu_imputed$Dataset_3))/3)
@@ -128,16 +131,25 @@ Develop at least two analytic approaches for predicting the 30-day mortality of 
 
 1. Partition data into 80% training set and 20% test set. Stratify partitioning according the 30-day mortality status.
 ```{r}
-d30_true <- icu_analysis[icu_analysis$died_within_30d==1,1:ncol(icu_analysis)]
-d30_false <- icu_analysis[icu_analysis$died_within_30d==0,1:ncol(icu_analysis)]
+#Stratifying by 30-day mortality status
+d30_true <- icu_analysis[
+  icu_analysis$died_within_30d == 1, 1:ncol(icu_analysis)]
+d30_false <- icu_analysis[
+  icu_analysis$died_within_30d == 0, 1:ncol(icu_analysis)]
+#Sampling from to build our training and test sets
 train_size30T <- round(nrow(d30_true) * .8)
 train_size30F <- round(nrow(d30_false) * .8)
 smpl_true <- sample(1:nrow(d30_true), train_size30T)
 smpl_false <- sample(1:nrow(d30_false), train_size30F)
+
+#Recombines training data of 30-day mortality TRUE and FALSE
 icu_train <- rbind(d30_true[smpl_true,1:ncol(icu_analysis)], 
                    d30_false[smpl_false,1:ncol(icu_analysis)])
+#Randomizes the rows, without doing this I got weird validation accuracy
+#Without doing this all 30-day mortality TRUE come before FALSE
 rows <- sample(nrow(icu_train))
 icu_train <- icu_train[rows, ]
+#creating x_train and y_train for Neural Network/Logistic Regression
 x_train <- model.matrix(died_within_30d ~ -1 + gender + age_at_adm + 
                           marital_status + ethnicity + heart_rate + 
                           non_invasive_blood_pressure_systolic + 
@@ -148,11 +160,13 @@ x_train <- model.matrix(died_within_30d ~ -1 + gender + age_at_adm +
                           hematocrit + wbc, data = icu_train)
 y_train <- to_categorical(data.matrix(icu_train$died_within_30d), 2)
 
-
-icu_test <- rbind(d30_true[-smpl_true,1:ncol(icu_analysis)],
-                  d30_false[-smpl_false,1:ncol(icu_analysis)])
+#Recombines test data of 30-day mortality TRUE and FALSE
+icu_test <- rbind(d30_true[-smpl_true, 1:ncol(icu_analysis)],
+                  d30_false[-smpl_false, 1:ncol(icu_analysis)])
+#Randomizes the rows
 rows <- sample(nrow(icu_test))
 icu_test <- icu_test[rows, ]
+#creating x_train and y_train for Neural Network/Logistic Regression
 x_test <- model.matrix(died_within_30d ~ -1 + gender + age_at_adm + 
                           marital_status + ethnicity + heart_rate + 
                           non_invasive_blood_pressure_systolic + 
@@ -173,7 +187,7 @@ model <- keras_model_sequential()
 model %>% 
   layer_dense(units = 16, activation = 'relu', input_shape = c(19)) %>% 
   layer_dropout(rate = 0.4) %>% 
-  layer_dense(units = 8, activation = 'relu') %>%
+  layer_dense(units = 4, activation = 'relu') %>%
   layer_dropout(rate = 0.3) %>%
   layer_dense(units = 2, activation = 'softmax')
 summary(model)
@@ -212,9 +226,11 @@ mlogit
 
 mlogit_history <- mlogit %>% fit(
   x_train, y_train, 
-  epochs = 20, batch_size = 128, 
+  epochs = 30, batch_size = 128, 
   validation_split = 0.2
 )
+
+plot(mlogit_history)
 ```
 
 3. Compare model prediction performance on the test set.
@@ -226,9 +242,8 @@ model %>% evaluate(x_test, y_test)
 ```{r}
 mlogit %>% evaluate(x_test, y_test)
 ```
-
-
-
+**Solution:**
+The neural network appears to have much smaller loss than the logistic regression, with a very tiny decrease in accuracy. I would consider the neural network to have better performance in this case. 
 
 
 
