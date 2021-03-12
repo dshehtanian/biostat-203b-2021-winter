@@ -51,6 +51,9 @@ All missing values in the dataset are replaced by the mean for that variable, th
 
 **Solution:**
 
+I filtered extreme values based on doing researching observed ranges for these variables.
+
+References:
 Based on [this article](https://pubmed.ncbi.nlm.nih.gov/7741618/#:~:text=The%20highest%20pressure%20recorded%20in,maximal%20lifting%20with%20slow%20exhalation.), it appears that the highest recorded blood pressure was 370.
 
 Based on [this article](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3273956/#:~:text=The%20fastest%20human%20ventricular%20conduction%20rate%20reported%20to%20date%20is,of%20480%20beats%20per%20minute.), it appears the highest recorded heart rate was 480.
