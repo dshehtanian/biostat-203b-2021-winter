@@ -22,7 +22,7 @@ library(tidyverse)
 library(lubridate)
 library(miceRanger)
 library(glmnet)
-library(caret)
+library(keras)
 ```
 
 ## Q1. Missing data
@@ -136,6 +136,8 @@ smpl_true <- sample(1:nrow(d30_true), train_size30T)
 smpl_false <- sample(1:nrow(d30_false), train_size30F)
 icu_train <- rbind(d30_true[smpl_true,1:ncol(icu_analysis)], 
                    d30_false[smpl_false,1:ncol(icu_analysis)])
+rows <- sample(nrow(icu_train))
+icu_train <- icu_train[rows, ]
 x_train <- model.matrix(died_within_30d ~ -1 + gender + age_at_adm + 
                           marital_status + ethnicity + heart_rate + 
                           non_invasive_blood_pressure_systolic + 
@@ -144,9 +146,13 @@ x_train <- model.matrix(died_within_30d ~ -1 + gender + age_at_adm +
                           bicarbonate + calcium + chloride + creatinine + 
                           glucose + magnesium + potassium + sodium + 
                           hematocrit + wbc, data = icu_train)
-y_train <- ifelse(icu_train$died_within_30d == 1, 1, 0)
+y_train <- to_categorical(data.matrix(icu_train$died_within_30d), 2)
+
+
 icu_test <- rbind(d30_true[-smpl_true,1:ncol(icu_analysis)],
                   d30_false[-smpl_false,1:ncol(icu_analysis)])
+rows <- sample(nrow(icu_test))
+icu_test <- icu_test[rows, ]
 x_test <- model.matrix(died_within_30d ~ -1 + gender + age_at_adm + 
                           marital_status + ethnicity + heart_rate + 
                           non_invasive_blood_pressure_systolic + 
@@ -155,34 +161,70 @@ x_test <- model.matrix(died_within_30d ~ -1 + gender + age_at_adm +
                           bicarbonate + calcium + chloride + creatinine + 
                           glucose + magnesium + potassium + sodium + 
                           hematocrit + wbc, data = icu_test)
-y_test <- ifelse(icu_test$died_within_30d == 1, 1, 0)
+y_test <- to_categorical(data.matrix(icu_test$died_within_30d), 2)
+
+
 ```
 2. Train the models using the training set.
 ```{r}
-#Logistic Regression
-lgstc_reg <- glm(died_within_30d ~ gender + age_at_adm + marital_status + 
-                   ethnicity + heart_rate + 
-                   non_invasive_blood_pressure_systolic + 
-                   non_invasive_blood_pressure_mean + respiratory_rate + 
-                   temperature_fahrenheit + bicarbonate + calcium + chloride +
-                   creatinine + glucose + magnesium + potassium + sodium +
-                   hematocrit + wbc, data=icu_train, family = binomial)
-summary(lgstc_reg)
+#Neural Network
 
-#Logistic Regression with Lasso
-lfit=glmnet(x_train, y_train, family = "binomial", alpha = 1)
-summary(lfit)
-plot(lfit, xvar = "lambda", label = TRUE)
+model <- keras_model_sequential() 
+model %>% 
+  layer_dense(units = 16, activation = 'relu', input_shape = c(19)) %>% 
+  layer_dropout(rate = 0.4) %>% 
+  layer_dense(units = 8, activation = 'relu') %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 2, activation = 'softmax')
+summary(model)
+
+model %>% compile(
+  loss = 'categorical_crossentropy',
+  optimizer = optimizer_rmsprop(),
+  metrics = c('accuracy')
+)
+model
+
+system.time({
+history <- model %>% fit(
+  x_train, y_train, 
+  epochs = 30, batch_size = 128, 
+  validation_split = 0.2
+)
+})
+
+plot(history)
+```
+
+
+```{r}
+# Logistic Regression
+mlogit <- keras_model_sequential() 
+mlogit %>% layer_dense(units = 2, activation = 'softmax', input_shape = c(19))
+summary(mlogit)
+
+mlogit %>% compile(
+  loss = 'categorical_crossentropy',
+  optimizer = optimizer_rmsprop(),
+  metrics = c('accuracy')
+)
+mlogit
+
+mlogit_history <- mlogit %>% fit(
+  x_train, y_train, 
+  epochs = 20, batch_size = 128, 
+  validation_split = 0.2
+)
 ```
 
 3. Compare model prediction performance on the test set.
 ```{r}
-#Logistic Regression with Lasso
-pred_val <- predict(lfit, newx = x_test, type = "response", s = lfit$lambda)
-dev_val <- -2*colSums(y_test * log(pred_val) + (1 - y_test) * log(1 - pred_val))
-tibble(lambda = lfit$lambda, dev_val = dev_val) %>% ggplot() + 
-  geom_point(mapping = aes(x = lambda, y = dev_val)) + scale_x_log10() + 
-  labs(y = "Binomial deviance on validation set", x = "Lambda")
+#Neural Network
+model %>% evaluate(x_test, y_test)
+```
+
+```{r}
+mlogit %>% evaluate(x_test, y_test)
 ```
 
 
