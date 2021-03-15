@@ -37,9 +37,9 @@ Through the Shiny app developed in HW3, we observe abundant missing values in th
 
 **Solution:**
 
-MCAR - Missing completely at random - The probability of being missing is the same for all cases.
-MAR - Missing at random - The probability of being missing depends only on observed values, not unobserved values. 
-MNAR - Missing not at random - The probability of being missing is unequal for unknown reasons.
+MCAR - Missing completely at random - The probability of being missing is unrelated to the value of the observations.
+MAR - Missing at random - The probability of being missing depends only on observed values, not unobserved/missing values. 
+MNAR - Missing not at random - The probability of being missing depnends on the value of the missing data.
 
 2. Explain in a couple of sentences how the Multiple Imputation by Chained Equations (MICE) work.
 
@@ -92,14 +92,14 @@ Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod,
 
 4. Impute missing values by `miceRanger` (request $m=3$ datasets). This step is very computational intensive. Make sure to save the imputation results as a file.
 
-```{r, eval=FALSE}
+```{r}
 #max depth needed to be set otherwise my R instance would crash on the 
 #teaching server
 seqTime <- system.time(
   miceObj <- miceRanger(
     icudata_filtered, m = 3, 
-    #max.depth = 10, 
-    returnModels = TRUE, verbose=TRUE))
+    max.depth = 10, 
+    returnModels = TRUE, verbose = TRUE))
 miceObj
 
 ```
@@ -116,7 +116,8 @@ The first set of plots, shows the distribution of the original data (in red) and
 
 The second set of plots shows boxplots of the correlations between imputed values at each iteration.
 
-The third set of plotsm shows wheter the imputed data has converged. It looks like most of our variables have converged. However, it looks like hemocrit and calcium haven't converged after 10 iterations.
+The third set of plots shows whether the imputed data has converged. It looks like most of our variables have converged. However, it looks like heart rate, hemocrit and magnesium haven't converged after 10 iterations.
+
 6. Obtain a complete data set by averaging the 3 imputed data sets.
 ```{r}
 icu_imputed <- completeData(miceObj)
@@ -188,9 +189,9 @@ y_test <- to_categorical(data.matrix(icu_test$died_within_30d), 2)
 
 model <- keras_model_sequential() 
 model %>% 
-  layer_dense(units = 16, activation = 'relu', input_shape = c(19)) %>% 
+  layer_dense(units = 256, activation = 'relu', input_shape = c(19)) %>% 
   layer_dropout(rate = 0.4) %>% 
-  layer_dense(units = 4, activation = 'relu') %>%
+  layer_dense(units = 128, activation = 'relu') %>%
   layer_dropout(rate = 0.3) %>%
   layer_dense(units = 2, activation = 'softmax')
 summary(model)
@@ -243,10 +244,11 @@ model %>% evaluate(x_test, y_test)
 ```
 
 ```{r}
+#Logistic Regression
 mlogit %>% evaluate(x_test, y_test)
 ```
 **Solution:**
-The neural network appears to have much smaller loss than the logistic regression, with a very tiny decrease in accuracy. I would consider the neural network to have better performance in this case. 
+The neural network appears to have a smaller loss and greater accuracy than the logistic regression. I would consider the neural network to have better performance in this case. 
 
 
 
