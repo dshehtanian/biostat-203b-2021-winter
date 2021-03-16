@@ -1,6 +1,7 @@
 ---
-title: "Biostat 203B Homework 4 (Draft)"
-subtitle: Due Mar 12 @ 11:59PM
+title: "Biostat 203B Homework 4"
+author: Dominic Shehtanian
+subtitle: Due Mar 19 @ 11:59PM
 output:
   # ioslides_presentation: default
   html_document:
@@ -57,6 +58,8 @@ References:
 Based on [this article](https://pubmed.ncbi.nlm.nih.gov/7741618/#:~:text=The%20highest%20pressure%20recorded%20in,maximal%20lifting%20with%20slow%20exhalation.), it appears that the highest recorded blood pressure was 370.
 
 Based on [this article](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3273956/#:~:text=The%20fastest%20human%20ventricular%20conduction%20rate%20reported%20to%20date%20is,of%20480%20beats%20per%20minute.), it appears the highest recorded heart rate was 480.
+
+Based on [this article](http://www.atcs.jp/pdf/2008_14_3/138.pdf), I chose 60 degrees Fahrenheit as the lowest reasonable temperature reading for a living patient.
 ```{r}
 #Reading in the ICU Cohort Data
 icudata <- readRDS("./icu_cohort.rds")
@@ -107,16 +110,15 @@ miceObj
 5. Make imputation diagnostic plots and explain what they mean.
 
 ```{r}
-plotDistributions(miceObj,vars = 'allNumeric')
-plotCorrelations(miceObj,vars = 'allNumeric')
-plotVarConvergence(miceObj,vars = 'allNumeric')
+plotDistributions(miceObj, vars = 'allNumeric')
+plotVarConvergence(miceObj, vars = 'allNumeric')
 ```
 **Solution:**
-The first set of plots, shows the distribution of the original data (in red) and the imputed data (in black). For most of the variable these match fairly closely. However, for heart rate and respiratory rate there appears to be large deviations. This implies that data is not missing completely at random.
+The first set of plots, shows the distribution of the original data (in red) and the imputed data (in black). For most of the variable these match fairly closely. However, for heart rate appears to have very large deviations and respiratory rate and hematocrit have noticeable deviations. This implies that data is not missing completely at random.
 
-The second set of plots shows boxplots of the correlations between imputed values at each iteration.
+The second set of plots shows whether the imputed data has converged. It looks like most of our variables have converged. However, it looks like many variables did not converge, including respiratory rate, temperature (fahrenheit), calcium, and magnesium.
 
-The third set of plots shows whether the imputed data has converged. It looks like most of our variables have converged. However, it looks like heart rate, hemocrit and magnesium haven't converged after 10 iterations.
+I ran the imputation with a max depth of 20 on my personal computer and many variables still had issues with convergence. I limited the max depth to ten, due to performance issues on the teaching server.
 
 6. Obtain a complete data set by averaging the 3 imputed data sets.
 ```{r}
@@ -189,9 +191,9 @@ y_test <- to_categorical(data.matrix(icu_test$died_within_30d), 2)
 
 model <- keras_model_sequential() 
 model %>% 
-  layer_dense(units = 256, activation = 'relu', input_shape = c(19)) %>% 
+  layer_dense(units = 8, activation = 'relu', input_shape = c(19)) %>% 
   layer_dropout(rate = 0.4) %>% 
-  layer_dense(units = 128, activation = 'relu') %>%
+  layer_dense(units = 4, activation = 'relu') %>%
   layer_dropout(rate = 0.3) %>%
   layer_dense(units = 2, activation = 'softmax')
 summary(model)
@@ -248,7 +250,7 @@ model %>% evaluate(x_test, y_test)
 mlogit %>% evaluate(x_test, y_test)
 ```
 **Solution:**
-The neural network appears to have a smaller loss and greater accuracy than the logistic regression. I would consider the neural network to have better performance in this case. 
+The neural network appears to have a smaller loss and slightly greater accuracy than the logistic regression. I would consider the neural network to have better performance in this case. 
 
 
 
