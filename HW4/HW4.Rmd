@@ -125,6 +125,9 @@ I ran the imputation with a max depth of 20 on my personal computer and many var
 icu_imputed <- completeData(miceObj)
 #Need to convert to matrix to average
 #Reconverted to data frame to use column names in part 2
+icu_imputed$Dataset_1 <- dummy_cols(icu_imputed$Dataset_1) %>% select(-insurance, - language, - marital_status, -ethnicity, -gender)
+icu_imputed$Dataset_2 <- dummy_cols(icu_imputed$Dataset_2) %>% select(-insurance, - language, - marital_status, -ethnicity, -gender)
+icu_imputed$Dataset_3 <- dummy_cols(icu_imputed$Dataset_3) %>% select(-insurance, - language, - marital_status, -ethnicity, -gender)
 icu_analysis <- data.frame((data.matrix(icu_imputed$Dataset_1) + 
                               data.matrix(icu_imputed$Dataset_2) + 
                               data.matrix(icu_imputed$Dataset_3))/3)
@@ -156,8 +159,15 @@ icu_train <- rbind(d30_true[smpl_true,1:ncol(icu_analysis)],
 rows <- sample(nrow(icu_train))
 icu_train <- icu_train[rows, ]
 #creating x_train and y_train for Neural Network/Logistic Regression
-x_train <- model.matrix(died_within_30d ~ -1 + gender + age_at_adm + 
-                          marital_status + ethnicity + heart_rate + 
+x_train <- model.matrix(died_within_30d ~ -1 + gender_F + gender_M +
+                          age_at_adm + marital_status_DIVORCED + 
+                          marital_status_MARRIED + marital_status_SINGLE + 
+                          marital_status_WIDOWED + 
+                          ethnicity_AMERICAN.INDIAN.ALASKA.NATIVE + 
+                          ethnicity_ASIAN + ethnicity_BLACK.AFRICAN.AMERICAN + 
+                          ethnicity_HISPANIC.LATINO + ethnicity_OTHER + 
+                          ethnicity_WHITE + ethnicity_UNABLE.TO.OBTAIN + 
+                          ethnicity_UNKNOWN + heart_rate + 
                           non_invasive_blood_pressure_systolic + 
                           non_invasive_blood_pressure_mean +
                           respiratory_rate + temperature_fahrenheit + 
@@ -173,8 +183,15 @@ icu_test <- rbind(d30_true[-smpl_true, 1:ncol(icu_analysis)],
 rows <- sample(nrow(icu_test))
 icu_test <- icu_test[rows, ]
 #creating x_train and y_train for Neural Network/Logistic Regression
-x_test <- model.matrix(died_within_30d ~ -1 + gender + age_at_adm + 
-                          marital_status + ethnicity + heart_rate + 
+x_test <- model.matrix(died_within_30d ~ -1 + gender_F + gender_M +
+                          age_at_adm + marital_status_DIVORCED + 
+                          marital_status_MARRIED + marital_status_SINGLE + 
+                          marital_status_WIDOWED + 
+                          ethnicity_AMERICAN.INDIAN.ALASKA.NATIVE + 
+                          ethnicity_ASIAN + ethnicity_BLACK.AFRICAN.AMERICAN + 
+                          ethnicity_HISPANIC.LATINO + ethnicity_OTHER + 
+                          ethnicity_WHITE + ethnicity_UNABLE.TO.OBTAIN + 
+                          ethnicity_UNKNOWN + heart_rate + 
                           non_invasive_blood_pressure_systolic + 
                           non_invasive_blood_pressure_mean +
                           respiratory_rate + temperature_fahrenheit + 
@@ -191,7 +208,7 @@ y_test <- to_categorical(data.matrix(icu_test$died_within_30d), 2)
 
 model <- keras_model_sequential() 
 model %>% 
-  layer_dense(units = 8, activation = 'relu', input_shape = c(19)) %>% 
+  layer_dense(units = 8, activation = 'relu', input_shape = c(30)) %>% 
   layer_dropout(rate = 0.4) %>% 
   layer_dense(units = 4, activation = 'relu') %>%
   layer_dropout(rate = 0.3) %>%
@@ -220,7 +237,7 @@ plot(history)
 ```{r}
 # Logistic Regression
 mlogit <- keras_model_sequential() 
-mlogit %>% layer_dense(units = 2, activation = 'softmax', input_shape = c(19))
+mlogit %>% layer_dense(units = 2, activation = 'softmax', input_shape = c(30))
 summary(mlogit)
 
 mlogit %>% compile(
