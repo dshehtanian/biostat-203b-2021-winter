@@ -24,7 +24,11 @@ library(lubridate)
 library(miceRanger)
 library(glmnet)
 library(keras)
+library(fastDummies)
 ```
+
+**Note:** 
+This will take a long time to knit on first time as it takes a very long time to run the imputation.
 
 ## Q1. Missing data
 
@@ -103,7 +107,7 @@ seqTime <- system.time(
     icudata_filtered, m = 3, 
     max.depth = 10, 
     returnModels = TRUE, verbose = TRUE))
-miceObj
+miceObj %>% saveRDS('./imputation_data')
 
 ```
 
@@ -125,9 +129,14 @@ I ran the imputation with a max depth of 20 on my personal computer and many var
 icu_imputed <- completeData(miceObj)
 #Need to convert to matrix to average
 #Reconverted to data frame to use column names in part 2
-icu_imputed$Dataset_1 <- dummy_cols(icu_imputed$Dataset_1) %>% select(-insurance, - language, - marital_status, -ethnicity, -gender)
-icu_imputed$Dataset_2 <- dummy_cols(icu_imputed$Dataset_2) %>% select(-insurance, - language, - marital_status, -ethnicity, -gender)
-icu_imputed$Dataset_3 <- dummy_cols(icu_imputed$Dataset_3) %>% select(-insurance, - language, - marital_status, -ethnicity, -gender)
+#dummy_cols transforms character variables in multiple variables
+#(i.e gender become gender_M and gender_F, where gender_F = 1 when gender = F)
+icu_imputed$Dataset_1 <- dummy_cols(icu_imputed$Dataset_1) %>% 
+  select(-insurance, - language, - marital_status, -ethnicity, -gender)
+icu_imputed$Dataset_2 <- dummy_cols(icu_imputed$Dataset_2) %>% 
+  select(-insurance, - language, - marital_status, -ethnicity, -gender)
+icu_imputed$Dataset_3 <- dummy_cols(icu_imputed$Dataset_3) %>% 
+  select(-insurance, - language, - marital_status, -ethnicity, -gender)
 icu_analysis <- data.frame((data.matrix(icu_imputed$Dataset_1) + 
                               data.matrix(icu_imputed$Dataset_2) + 
                               data.matrix(icu_imputed$Dataset_3))/3)
