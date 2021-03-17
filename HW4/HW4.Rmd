@@ -28,7 +28,7 @@ library(fastDummies)
 ```
 
 **Note:** 
-This will take a long time to knit on first time as it takes a very long time to run the imputation.
+Knitting this the first time will take a long time due to the imputation. I saved the imputed data as a file as part of this code, but it is too large to host on GitHub.
 
 ## Q1. Missing data
 
@@ -99,6 +99,7 @@ Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod,
 
 4. Impute missing values by `miceRanger` (request $m=3$ datasets). This step is very computational intensive. Make sure to save the imputation results as a file.
 
+
 ```{r}
 #max depth needed to be set otherwise my R instance would crash on the 
 #teaching server
@@ -110,12 +111,14 @@ seqTime <- system.time(
 miceObj %>% saveRDS('./imputation_data')
 
 ```
-
+```{r}
+impute_data <- readRDS('./imputation_data')
+```
 5. Make imputation diagnostic plots and explain what they mean.
 
 ```{r}
-plotDistributions(miceObj, vars = 'allNumeric')
-plotVarConvergence(miceObj, vars = 'allNumeric')
+plotDistributions(impute_data, vars = 'allNumeric')
+plotVarConvergence(impute_data, vars = 'allNumeric')
 ```
 **Solution:**
 The first set of plots, shows the distribution of the original data (in red) and the imputed data (in black). For most of the variable these match fairly closely. However, for heart rate appears to have very large deviations and respiratory rate and hematocrit have noticeable deviations. This implies that data is not missing completely at random.
@@ -126,7 +129,7 @@ I ran the imputation with a max depth of 20 on my personal computer and many var
 
 6. Obtain a complete data set by averaging the 3 imputed data sets.
 ```{r}
-icu_imputed <- completeData(miceObj)
+icu_imputed <- completeData(impute_data)
 #Need to convert to matrix to average
 #Reconverted to data frame to use column names in part 2
 #dummy_cols transforms character variables in multiple variables
