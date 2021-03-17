@@ -143,7 +143,7 @@ icu_imputed$Dataset_3 <- dummy_cols(icu_imputed$Dataset_3) %>%
 icu_analysis <- data.frame((data.matrix(icu_imputed$Dataset_1) + 
                               data.matrix(icu_imputed$Dataset_2) + 
                               data.matrix(icu_imputed$Dataset_3))/3)
-icu_analysis
+head(icu_analysis)
 ```
 
 ## Q2. Predicting 30-day mortality
