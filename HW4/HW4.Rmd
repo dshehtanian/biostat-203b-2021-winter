@@ -43,20 +43,22 @@ Through the Shiny app developed in HW3, we observe abundant missing values in th
 **Solution:**
 
 MCAR - Missing completely at random - The probability of being missing is unrelated to the value of the observations.
-MAR - Missing at random - The probability of being missing depends only on observed values, not unobserved/missing values. 
-MNAR - Missing not at random - The probability of being missing depnends on the value of the missing data.
+
+MAR - Missing at random - The probability of being missing depends only on observed values, not unobserved/missing values.
+
+MNAR - Missing not at random - The probability of being missing depends on the value of the missing data.
 
 2. Explain in a couple of sentences how the Multiple Imputation by Chained Equations (MICE) work.
 
 **Solution**:
 
-All missing values in the dataset are replaced by the mean for that variable, then one at a time, each variable with missing observations has those observations set back to missing (from the first imputed values) and the observations are predicted using the other variables in the data set. This is repeated for a set number of cycles.
+All missing values in the dataset are replaced by the mean for that variable, then one at a time, each variable with missing observations has those observations set back to missing (from their imputed values) and the observations are predicted using the other variables in the data set. This is repeated for until the data converges or a set number of cycles.
 
 3. Perform a data quality check of the ICU stays data. Discard variables with substantial missingness, say >5000 `NA`s. Replace apparent data entry errors by `NA`s.
 
 **Solution:**
 
-I filtered extreme values based on doing researching observed ranges for these variables.
+I filtered extreme values based on observed ranges for these variables.
 
 References:
 Based on [this article](https://pubmed.ncbi.nlm.nih.gov/7741618/#:~:text=The%20highest%20pressure%20recorded%20in,maximal%20lifting%20with%20slow%20exhalation.), it appears that the highest recorded blood pressure was 370.
@@ -69,7 +71,7 @@ Based on [this article](http://www.atcs.jp/pdf/2008_14_3/138.pdf), I chose 60 de
 icudata <- readRDS("./icu_cohort.rds")
 summary(icudata)
 
-#Dropping variables with >5000 NAs
+#Dropping variables with >5000 NAs and variables that won't be used for analysis
 icudata_filtered <- select(icudata, -deathtime, -edregtime, -edouttime, -dod, 
                            -arterial_blood_pressure_systolic, 
                            -arterial_blood_pressure_mean, -lactate, 
@@ -99,7 +101,6 @@ Based on the summary of icudata, I removed deathtime, edregtime, edouttime, dod,
 
 4. Impute missing values by `miceRanger` (request $m=3$ datasets). This step is very computational intensive. Make sure to save the imputation results as a file.
 
-
 ```{r}
 #max depth needed to be set otherwise my R instance would crash on the 
 #teaching server
@@ -120,10 +121,12 @@ impute_data <- readRDS('./imputation_data')
 plotDistributions(impute_data, vars = 'allNumeric')
 plotVarConvergence(impute_data, vars = 'allNumeric')
 ```
-**Solution:**
-The first set of plots, shows the distribution of the original data (in red) and the imputed data (in black). For most of the variable these match fairly closely. However, for heart rate appears to have very large deviations and respiratory rate and hematocrit have noticeable deviations. This implies that data is not missing completely at random.
 
-The second set of plots shows whether the imputed data has converged. It looks like most of our variables have converged. However, it looks like many variables did not converge, including respiratory rate, temperature (fahrenheit), calcium, and magnesium.
+
+**Solution:**
+The first set of plots shows the distribution of the original data (in red) and the imputed data (in black). For most of the variable these match fairly closely. However, for heart rate appears to have very large deviations and respiratory rate and hematocrit have noticeable deviations. This implies that data is not missing completely at random.
+
+The second set of plots shows whether the imputed data has converged. It looks like most of our variables have converged. However, it looks like many variables did not converge, including respiratory rate, temperature (Fahrenheit), calcium, and magnesium.
 
 I ran the imputation with a max depth of 20 on my personal computer and many variables still had issues with convergence. I limited the max depth to ten, due to performance issues on the teaching server.
 
@@ -135,14 +138,14 @@ icu_imputed <- completeData(impute_data)
 #dummy_cols transforms character variables in multiple variables
 #(i.e gender become gender_M and gender_F, where gender_F = 1 when gender = F)
 icu_imputed$Dataset_1 <- dummy_cols(icu_imputed$Dataset_1) %>% 
-  select(-insurance, - language, - marital_status, -ethnicity, -gender)
+  select(-insurance, -language, -marital_status, -ethnicity, -gender)
 icu_imputed$Dataset_2 <- dummy_cols(icu_imputed$Dataset_2) %>% 
-  select(-insurance, - language, - marital_status, -ethnicity, -gender)
+  select(-insurance, -language, -marital_status, -ethnicity, -gender)
 icu_imputed$Dataset_3 <- dummy_cols(icu_imputed$Dataset_3) %>% 
-  select(-insurance, - language, - marital_status, -ethnicity, -gender)
+  select(-insurance, -language, -marital_status, -ethnicity, -gender)
 icu_analysis <- data.frame((data.matrix(icu_imputed$Dataset_1) + 
                               data.matrix(icu_imputed$Dataset_2) + 
-                              data.matrix(icu_imputed$Dataset_3))/3)
+                              data.matrix(icu_imputed$Dataset_3)) / 3)
 head(icu_analysis)
 ```
 
@@ -261,7 +264,7 @@ mlogit
 
 mlogit_history <- mlogit %>% fit(
   x_train, y_train, 
-  epochs = 30, batch_size = 128, 
+  epochs = 20, batch_size = 128, 
   validation_split = 0.2
 )
 
@@ -279,7 +282,7 @@ model %>% evaluate(x_test, y_test)
 mlogit %>% evaluate(x_test, y_test)
 ```
 **Solution:**
-The neural network appears to have a smaller loss and slightly greater accuracy than the logistic regression. I would consider the neural network to have better performance in this case. 
+The neural network appears to have a slightly smaller loss and slightly greater accuracy than the logistic regression. I would consider the neural network to have better performance in this case. 
 
 
 
